@@ -1,0 +1,38 @@
+﻿[
+    {
+        "clause":  "4.3.2",
+        "requirement":  "Atmospheric testing before confined-space entry",
+        "status":  "COMPLIANT",
+        "evidence":  "Gas test register TF-2026-014"
+    },
+    {
+        "clause":  "6.1.4",
+        "requirement":  "Valid hot-work permit system",
+        "status":  "CRITICAL",
+        "evidence":  "Permit expired on inspection date"
+    },
+    {
+        "clause":  "7.2.1",
+        "requirement":  "Emergency isolation signage",
+        "status":  "GAP",
+        "evidence":  "Two valves lacked durable tags"
+    },
+    {
+        "clause":  "8.4.3",
+        "requirement":  "Calibrated gas detector records",
+        "status":  "GAP",
+        "evidence":  "Calibration certificate unavailable"
+    },
+    {
+        "clause":  "9.1.2",
+        "requirement":  "Contractor induction evidence",
+        "status":  "GAP",
+        "evidence":  "Attendance sheet incomplete"
+    },
+    {
+        "clause":  "10.2.1",
+        "requirement":  "Bund wall integrity inspection",
+        "status":  "COMPLIANT",
+        "evidence":  "Inspection IR-TF-028"
+    }
+]

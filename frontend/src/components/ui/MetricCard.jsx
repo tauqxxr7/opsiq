@@ -1,0 +1,2 @@
+
+export default function MetricCard({label,value,detail,icon:Icon,tone="text-primary"}){return <article className="card-hover rounded-xl border border-border bg-surface p-5"><div className="flex items-start justify-between"><div><p className="text-xs uppercase tracking-widest text-muted">{label}</p><p className={"mt-3 text-3xl font-semibold "+tone}>{value}</p></div>{Icon&&<Icon className={tone} size={20}/>}</div><p className="mt-3 text-xs text-text-secondary">{detail}</p></article>}

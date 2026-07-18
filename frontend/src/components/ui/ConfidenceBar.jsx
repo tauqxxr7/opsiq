@@ -1,0 +1,2 @@
+
+export default function ConfidenceBar({score=0}){const pct=Math.round(score*100);const color=pct>=80?"bg-secondary":pct>=60?"bg-warning":"bg-critical";return <div className="flex items-center gap-3 text-xs"><div className="h-1.5 flex-1 rounded-full bg-border"><div className={"h-full rounded-full "+color} style={{width:pct+"%"}}/></div><span className="font-mono text-text-secondary">{pct}% confidence</span></div>}

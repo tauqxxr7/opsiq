@@ -149,3 +149,12 @@ OPSIQ never synthesises an answer without retrieved evidence. Empty retrieval re
 **ET AI Hackathon 2.0 · Phase 2 · Problem Statement #8**
 
 Tauqeer Sameer Bharde · [github.com/tauqxxr7](https://github.com/tauqxxr7)
+
+## Evidence-driven analytics limitations
+
+- Maintenance output is a deterministic recurrence-risk assessment, not a trained remaining-useful-life or time-to-failure model. Its 100-point formula is recurrence 25, recency 20, severity 20, downtime 15, repeated root cause 10, and shrinking intervals 10.
+- Compliance output is a prototype evidence-gap assessment and is not legal certification. The bundled inspection rows omit a `standard` field and are explicitly treated as OISD-118 demo evidence.
+- All bundled work orders, inspections, and incident records are synthetic demo data. The UI labels them accordingly.
+- `incident_history.json` is partially malformed after 11 recoverable records. OPSIQ loads valid objects defensively and reports the actual source count; missing/corrupt records are never invented.
+- Confidence values represent evidence volume/completeness, not calibrated failure probability.
+- The knowledge graph is rebuilt in memory from source records per analysis call. Enterprise use requires persistent graph storage, data quality controls, temporal validation, and domain-owner review.

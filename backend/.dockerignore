@@ -1,0 +1,15 @@
+**pycache**
+**/__pycache__
+*.pyc
+.pytest_cache
+.venv
+.env
+data/chroma_db
+uploads
+tmp
+*.log
+.git
+.gitignore
+tests
+model_cache
+.cache

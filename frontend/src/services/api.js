@@ -1,7 +1,12 @@
 import axios from "axios";
 
+const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, "");
+const apiBaseUrl = configuredApiUrl
+  ? `${configuredApiUrl}${configuredApiUrl.endsWith("/api") ? "" : "/api"}`
+  : "http://localhost:8000/api";
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  baseURL: apiBaseUrl,
   timeout: 30000,
 });
 

@@ -1,14 +1,15 @@
 import axios from "axios";
+import { joinApiUrl, resolveApiBaseUrl } from "./apiConfig";
 
-const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, "");
-const apiBaseUrl = configuredApiUrl
-  ? `${configuredApiUrl}${configuredApiUrl.endsWith("/api") ? "" : "/api"}`
-  : "http://localhost:8000/api";
+const apiBaseUrl = resolveApiBaseUrl(import.meta.env.VITE_API_URL, {
+  production: import.meta.env.PROD,
+});
 
 const client = axios.create({
-  baseURL: apiBaseUrl,
   timeout: 30000,
 });
+
+const endpoint = (path) => joinApiUrl(apiBaseUrl, path);
 
 export function getApiErrorMessage(error) {
   if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
@@ -24,17 +25,17 @@ export function getApiErrorMessage(error) {
   return detail || `The backend rejected the request (${error.response.status}). Check the submitted data.`;
 }
 
-export const ask = (payload) => client.post("/query", payload).then((response) => response.data);
+export const ask = (payload) => client.post(endpoint("query"), payload).then((response) => response.data);
 export const upload = (file, onProgress) => {
   const body = new FormData();
   body.append("file", file);
-  return client.post("/documents/upload", body, { onUploadProgress: onProgress }).then((response) => response.data);
+  return client.post(endpoint("documents/upload"), body, { onUploadProgress: onProgress }).then((response) => response.data);
 };
-export const documentStats = () => client.get("/documents/stats").then((response) => response.data);
-export const documents = () => client.get("/documents").then((response) => response.data);
-export const maintenance = (id) => client.get(`/maintenance/${id}`).then((response) => response.data);
-export const maintenanceCatalog = () => client.get("/maintenance").then((response) => response.data);
-export const compliance = (id) => client.get(`/compliance/audit/${id}`).then((response) => response.data);
-export const patterns = () => client.get("/patterns").then((response) => response.data);
+export const documentStats = () => client.get(endpoint("documents/stats")).then((response) => response.data);
+export const documents = () => client.get(endpoint("documents")).then((response) => response.data);
+export const maintenance = (id) => client.get(endpoint(`maintenance/${id}`)).then((response) => response.data);
+export const maintenanceCatalog = () => client.get(endpoint("maintenance")).then((response) => response.data);
+export const compliance = (id) => client.get(endpoint(`compliance/audit/${id}`)).then((response) => response.data);
+export const patterns = () => client.get(endpoint("patterns")).then((response) => response.data);
 
 export default client;

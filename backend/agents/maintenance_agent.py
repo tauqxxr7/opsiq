@@ -73,7 +73,7 @@ class MaintenanceAgent:
             "shrinking_failure_intervals": 10 if shrinking else 0,
         }
         breakdown = {name: {"score": round(score, 2), "weight": WEIGHTS[name], "normalized": round(score/WEIGHTS[name], 3), "evidence": self._component_evidence(name, failure_count, cause_count, buckets, severities, avg_downtime, baseline, intervals)} for name, score in components.items()}
-        score = round(sum(components.values()), 2)
+        score = round(sum(item["score"] for item in breakdown.values()), 2)
         level = "CRITICAL" if score >= 75 else "HIGH" if score >= 55 else "MONITOR" if score >= 30 else "LOW"
         evidence = [{"record_id": row["work_order_id"], "date": row["date"], "failure_type": row["failure_type"], "root_cause": row["root_cause"], "severity": row["severity"], "downtime_hours": row["downtime_hours"]} for row in history]
         completeness = mean(sum(row.get(field) not in (None, "") for field in ("date", "failure_type", "root_cause", "severity", "downtime_hours"))/5 for row in history)

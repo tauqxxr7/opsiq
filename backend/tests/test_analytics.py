@@ -12,6 +12,10 @@ def test_maintenance_score_is_deterministic_and_traceable():
     first = MaintenanceAgent(records=rows).analyze("p-1")
     second = MaintenanceAgent(records=rows).analyze("P-1")
     assert first["risk_score"] == sum(item["score"] for item in first["risk_breakdown"].values())
+    for analysis in MaintenanceAgent().catalog()["equipment"]:
+        assert analysis["risk_score"] == round(
+            sum(item["score"] for item in analysis["risk_breakdown"].values()), 2
+        )
     assert first["metadata"]["analysis_id"] == second["metadata"]["analysis_id"]
     assert first["recurrence"]["trend"] == "SHRINKING"
     assert first["supporting_evidence_ids"] == ["WO-1", "WO-2", "WO-3", "WO-4"]

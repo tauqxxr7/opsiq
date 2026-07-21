@@ -1,8 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import Sidebar from "./components/layout/Sidebar";
-import TopBar from "./components/layout/TopBar";
+import AppShell from "./components/layout/AppShell";
 import LoadingState from "./components/ui/LoadingState";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -15,27 +14,22 @@ const ArchitecturePage = lazy(() => import("./pages/ArchitecturePage"));
 
 export default function App() {
   const [open, setOpen] = useState(false);
-
   return (
-    <div className="min-h-screen bg-base">
-      <Sidebar open={open} setOpen={setOpen} />
-      <div className="md:pl-72">
-        <TopBar setOpen={setOpen} />
-        <main className="p-4 md:p-8">
-          <Suspense fallback={<LoadingState message="Loading OPSIQ workspace..." />}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/copilot" element={<ExpertCopilot />} />
-              <Route path="/maintenance" element={<MaintenanceIntel />} />
-              <Route path="/compliance" element={<ComplianceAudit />} />
-              <Route path="/patterns" element={<FailurePatterns />} />
-              <Route path="/documents" element={<DocumentLibrary />} />
-              <Route path="/architecture" element={<ArchitecturePage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </main>
-      </div>
-    </div>
+    <AppShell navigationOpen={open} setNavigationOpen={setOpen}>
+      <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 lg:p-8">
+        <Suspense fallback={<LoadingState message="Loading OPSIQ workspace..." />}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/copilot" element={<ExpertCopilot />} />
+            <Route path="/maintenance" element={<MaintenanceIntel />} />
+            <Route path="/compliance" element={<ComplianceAudit />} />
+            <Route path="/patterns" element={<FailurePatterns />} />
+            <Route path="/documents" element={<DocumentLibrary />} />
+            <Route path="/architecture" element={<ArchitecturePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </main>
+    </AppShell>
   );
 }

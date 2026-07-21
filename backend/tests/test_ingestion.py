@@ -54,3 +54,26 @@ def test_corrupt_registry_fails_closed(tmp_path):
     manifest.write_text("not-json", encoding="utf-8")
     with pytest.raises(IngestionRegistryError, match="cannot be read safely"):
         IngestionRegistry(manifest).list()
+
+
+def test_document_count_does_not_initialize_embedding_models(monkeypatch, tmp_path):
+    import sys
+    from types import SimpleNamespace
+    from services import retrieval_service
+
+    class Collection:
+        def count(self):
+            return 7
+
+    class Client:
+        def __init__(self, path):
+            self.path = path
+
+        def get_or_create_collection(self, *args, **kwargs):
+            return Collection()
+
+    monkeypatch.setitem(sys.modules, "chromadb", SimpleNamespace(PersistentClient=Client))
+    monkeypatch.setattr(retrieval_service, "CHROMA_DB_PATH", str(tmp_path))
+    service = retrieval_service.RetrievalService()
+    assert service.count() == 7
+    assert service.initialized is False

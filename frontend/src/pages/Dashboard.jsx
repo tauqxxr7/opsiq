@@ -1,4 +1,4 @@
-﻿import { Activity, Files, Network, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Activity, Files, Network, ShieldCheck, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import MetricCard from "../components/ui/MetricCard";

@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 from core.evidence import InspectionRecord, dataset_sha256, deterministic_analysis_id, load_records

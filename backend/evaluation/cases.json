@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0",
   "cases": [
     {"id": "maintenance-known", "type": "maintenance", "input": "P-201", "expected_status": "ok"},

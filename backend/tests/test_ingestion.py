@@ -1,4 +1,5 @@
-﻿from fastapi.testclient import TestClient
+import pytest
+from fastapi.testclient import TestClient
 import api.documents as documents_api
 from main import app
 
@@ -45,3 +46,11 @@ def test_corrupt_parser_result_is_422(monkeypatch):
     monkeypatch.setattr(documents_api,"DocumentProcessor",CorruptProcessor)
     with TestClient(app) as client:response=client.post("/api/documents/upload",files={"file":("corrupt.pdf",b"%PDF broken","application/pdf")})
     assert response.status_code==422;assert "corrupt" in response.json()["detail"].lower()
+
+
+def test_corrupt_registry_fails_closed(tmp_path):
+    from services.ingestion_registry import IngestionRegistry, IngestionRegistryError
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text("not-json", encoding="utf-8")
+    with pytest.raises(IngestionRegistryError, match="cannot be read safely"):
+        IngestionRegistry(manifest).list()

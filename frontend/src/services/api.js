@@ -1,4 +1,4 @@
-﻿import axios from "axios";
+import axios from "axios";
 
 const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, "");
 const apiBaseUrl = configuredApiUrl
@@ -38,6 +38,3 @@ export const compliance = (id) => client.get(`/compliance/audit/${id}`).then((re
 export const patterns = () => client.get("/patterns").then((response) => response.data);
 
 export default client;
-
-
-

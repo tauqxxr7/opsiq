@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import HealthTimeline from "../components/charts/HealthTimeline";
 import LoadingState from "../components/ui/LoadingState";

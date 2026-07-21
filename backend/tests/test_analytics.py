@@ -1,4 +1,4 @@
-﻿from agents.compliance_agent import ComplianceAgent
+from agents.compliance_agent import ComplianceAgent
 from agents.maintenance_agent import MaintenanceAgent
 from agents.pattern_agent import PatternAgent
 

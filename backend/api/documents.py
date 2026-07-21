@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import uuid
 from pathlib import Path
 
@@ -15,7 +15,7 @@ SUPPORTED = {".pdf": b"%PDF", ".docx": b"PK"}
 
 @router.post("/upload")
 async def upload(request: Request, file: UploadFile = File(...)):
-    filename = Path(file.filename or "").name
+    filename = Path((file.filename or "").replace("\\", "/")).name
     suffix = Path(filename).suffix.lower()
     if suffix not in SUPPORTED:
         raise HTTPException(415, "Only PDF and DOCX are supported")

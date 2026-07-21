@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request
 
 from agents.maintenance_agent import MaintenanceAgent
 

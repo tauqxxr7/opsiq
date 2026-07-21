@@ -1,4 +1,4 @@
-﻿from collections import Counter
+from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
 from statistics import mean
@@ -97,4 +97,3 @@ class MaintenanceAgent:
         }
     def run(self, state):
         return {**state, "final_response": self.analyze(str(state.get("equipment_id") or ""))}
-

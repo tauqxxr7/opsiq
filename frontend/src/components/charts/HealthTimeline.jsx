@@ -1,4 +1,4 @@
-﻿import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export default function HealthTimeline({ intervals = [] }) {
   const data = intervals.map((days, index) => ({ sequence: index + 1, days }));

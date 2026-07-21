@@ -1,4 +1,4 @@
-﻿# OPSIQ
+# OPSIQ
 
 ### Traceable Industrial Knowledge Intelligence
 
@@ -84,7 +84,7 @@ python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
 pip install -r requirements-dev.txt
-cp ../.env.example .env
+cp ../.env.example .env  # Windows PowerShell: Copy-Item ../.env.example .env
 python -m uvicorn main:app --reload --port 8000
 ```
 

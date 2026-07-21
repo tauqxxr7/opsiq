@@ -1,4 +1,4 @@
-﻿# Deterministic analytics methodology
+# Deterministic analytics methodology
 
 All bundled operational records are synthetic demonstration data. Analytics are historical evidence summaries, not trained predictions.
 

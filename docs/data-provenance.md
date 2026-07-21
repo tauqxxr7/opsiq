@@ -1,4 +1,4 @@
-﻿# Synthetic data provenance
+# Synthetic data provenance
 
 OPSIQ ships only synthetic demonstration evidence. It is not a production operational record set.
 

@@ -1,4 +1,4 @@
-﻿"""Offline, deterministic OPSIQ authenticity evaluation harness."""
+"""Offline, deterministic OPSIQ authenticity evaluation harness."""
 import json
 import sys
 from pathlib import Path

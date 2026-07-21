@@ -1,4 +1,4 @@
-﻿"""Validated loading and traceability helpers for OPSIQ evidence datasets."""
+"""Validated loading and traceability helpers for OPSIQ evidence datasets."""
 
 from __future__ import annotations
 
@@ -65,11 +65,22 @@ def load_records(path: Path, schema: type[RecordT]) -> list[RecordT]:
 
 
 def dataset_sha256(*paths: Path) -> str:
+    """Hash normalized JSON content so line endings and BOMs do not affect identity."""
     digest = hashlib.sha256()
     for path in sorted(paths, key=lambda item: item.as_posix()):
         digest.update(path.name.encode("utf-8"))
         digest.update(b"\0")
-        digest.update(path.read_bytes())
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8-sig"))
+            content = json.dumps(
+                payload,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8")
+        except (UnicodeError, json.JSONDecodeError):
+            content = path.read_bytes()
+        digest.update(content)
         digest.update(b"\0")
     return digest.hexdigest()
 
@@ -91,4 +102,3 @@ def deterministic_analysis_id(
         separators=(",", ":"),
     )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:20]
-

@@ -1,4 +1,4 @@
-﻿# API contracts
+# API contracts
 
 All specialist endpoints return HTTP 200 for valid requests, including valid requests with no matching evidence. Invalid uploads use explicit 4xx statuses.
 

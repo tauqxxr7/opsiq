@@ -1,4 +1,4 @@
-﻿import json
+import json
 from pathlib import Path
 
 import pytest
@@ -31,3 +31,15 @@ def test_recovered_runtime_incidents_are_exactly_independently_valid_records():
     assert len(records) == 11
     assert records[0].incident_id == "INC-2025-001"
     assert records[-1].incident_id == "INC-2025-011"
+
+
+def test_dataset_hash_ignores_bom_whitespace_and_line_endings(tmp_path: Path):
+    from core.evidence import dataset_sha256
+
+    first = tmp_path / "first" / "records.json"
+    second = tmp_path / "second" / "records.json"
+    first.parent.mkdir()
+    second.parent.mkdir()
+    first.write_bytes(b'\xef\xbb\xbf[\r\n  {"b": 2, "a": 1}\r\n]')
+    second.write_text('[{"a":1,"b":2}]', encoding="utf-8")
+    assert dataset_sha256(first) == dataset_sha256(second)

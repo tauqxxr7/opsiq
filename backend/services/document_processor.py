@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import re
 from io import BytesIO
 from pathlib import Path
@@ -39,4 +39,3 @@ class DocumentProcessor:
         if "procedure" in value:return "Operating Procedure"
         if "incident" in value:return "Incident Report"
         return "General Document"
-

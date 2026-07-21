@@ -1,4 +1,4 @@
-﻿from core.config import GEMINI_API_KEY
+from core.config import GEMINI_API_KEY
 class ExpertCopilotAgent:
     def __init__(self,retrieval=None):self.retrieval=retrieval
     def run(self,state):
@@ -13,4 +13,3 @@ class ExpertCopilotAgent:
         return {**state,"final_response":{"answer":answer,"citations":self._citations(chunks),"confidence":self._confidence(chunks),"follow_up_suggestions":["Show the supporting procedure","Check related equipment history"]}}
     def _citations(self,chunks):return [{"doc_name":x["doc_name"],"page":x["page"],"section":x["section"],"relevance_score":round(x["relevance_score"],3),"excerpt":x["text"][:280]} for x in chunks[:3]]
     def _confidence(self,chunks):return round(sum(x["relevance_score"] for x in chunks[:3])/min(3,len(chunks)),2)
-

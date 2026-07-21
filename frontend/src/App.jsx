@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import Sidebar from "./components/layout/Sidebar";
 import TopBar from "./components/layout/TopBar";
+import LoadingState from "./components/ui/LoadingState";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const ExpertCopilot = lazy(() => import("./pages/ExpertCopilot"));
@@ -21,13 +22,7 @@ export default function App() {
       <div className="md:pl-72">
         <TopBar setOpen={setOpen} />
         <main className="p-4 md:p-8">
-          <Suspense
-            fallback={
-              <div className="flex h-full items-center justify-center">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              </div>
-            }
-          >
+          <Suspense fallback={<LoadingState message="Loading OPSIQ workspace..." />}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/copilot" element={<ExpertCopilot />} />

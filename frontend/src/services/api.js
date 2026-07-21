@@ -24,6 +24,7 @@ export const upload = (file, onProgress) => {
   body.append("file", file);
   return client.post("/documents/upload", body, { onUploadProgress: onProgress }).then((response) => response.data);
 };
+export const documentStats = () => client.get("/documents/stats").then((response) => response.data);
 export const maintenance = (id) => client.get(`/maintenance/${id}`).then((response) => response.data);
 export const compliance = (id) => client.get(`/compliance/audit/${id}`).then((response) => response.data);
 export const patterns = () => client.get("/patterns").then((response) => response.data);

@@ -32,7 +32,7 @@ OPSIQ provides one evidence layer without replacing source systems.
 
 ## Page 4 — Architecture
 
-React/Vite → FastAPI → LangGraph routing → four specialist workflows.  
+React/Vite → FastAPI → LangGraph routing → four specialist workflows.
 ChromaDB and BM25 retrieve evidence; a cross-encoder reranks passages; optional Gemini synthesizes retrieved context. Deterministic agents calculate specialist results.
 
 See [architecture](architecture.md).

@@ -1,92 +1,128 @@
 # OPSIQ
 
-### Traceable Industrial Knowledge Intelligence
+### Evidence-grounded industrial intelligence for maintenance, compliance, failure-pattern analysis, and engineering knowledge retrieval.
 
-> ET AI Hackathon 2.0 · Problem Statement #8 · authenticity-hardened prototype
+OPSIQ combines grounded document retrieval with deterministic, traceable analytics over work orders, inspections, incidents, and uploaded technical documents.
 
 <p align="center">
+  <img src="https://img.shields.io/github/actions/workflow/status/tauqxxr7/opsiq/ci.yml?branch=main&style=flat-square&label=CI" alt="CI">
   <img src="https://img.shields.io/badge/Python_3.11-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.11">
   <img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/LangGraph-FF6B35?style=flat-square" alt="LangGraph">
   <img src="https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 18">
-  <img src="https://img.shields.io/badge/Evidence-Traceable-22C55E?style=flat-square" alt="Evidence traceable">
+  <img src="https://img.shields.io/badge/Vite_5-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 5">
+  <img src="https://img.shields.io/badge/License-MIT-22C55E?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel" alt="Vercel">
+  <img src="https://img.shields.io/badge/Backend-Railway-0B0D0E?style=flat-square&logo=railway" alt="Railway">
 </p>
 
-**[Live platform](https://opsiq-one.vercel.app)** · **[API docs](https://opsiq-production-b20c.up.railway.app/docs)** · **[Methodology](docs/METHODOLOGY.md)** · **[API contracts](docs/API_CONTRACTS.md)**
+**[Live application](https://opsiq-one.vercel.app)** · **[API documentation](https://opsiq-production-b20c.up.railway.app/docs)** · **[Architecture](docs/architecture.md)** · **[Methodology](docs/METHODOLOGY.md)** · **[Data provenance](docs/data-provenance.md)**
 
-> The live deployment may trail this feature branch until it is reviewed and deployed. No deployment is performed by this sprint.
+<!-- Add the verified public demo-video URL here after upload. -->
 
-## What OPSIQ demonstrates
+## Product tour
 
-OPSIQ is a multi-agent prototype for querying and analysing industrial evidence. It combines a document copilot with three deterministic specialist analyses:
+| Operational overview | Maintenance evidence | Compliance gaps |
+|---|---|---|
+| ![OPSIQ dashboard](docs/screenshots/dashboard-desktop.png) | ![P-201 recurrence-risk analysis](docs/screenshots/maintenance-desktop.png) | ![OISD-118 evidence-gap assessment](docs/screenshots/compliance-desktop.png) |
 
-- maintenance recurrence-risk scoring from work orders;
-- OISD-118 prototype evidence-gap assessment from inspection records;
-- cross-source failure-pattern aggregation from work orders and incident history.
+See the [complete screenshot gallery](docs/screenshots/README.md).
 
-The specialist outputs are not opaque predictions. Each successful analysis carries the exact evidence IDs, dataset hash, methodology version, deterministic analysis ID, limitations and component-level calculations. Valid queries with no matching evidence return `status: no_data`; they are never presented as low risk or compliant.
+## The problem
 
-## Architecture
+Industrial evidence is often distributed across work orders, inspections, incident records, manuals, and standards. Finding and connecting it can require several tools and manual cross-referencing. OPSIQ demonstrates a single evidence layer for retrieval and reproducible specialist analysis.
+
+## What OPSIQ does
+
+- **Expert Copilot:** grounded document retrieval with citations and explicit no-evidence behavior.
+- **Maintenance Intelligence:** deterministic recurrence-risk scoring from work-order history.
+- **Compliance Audit:** prototype evidence-gap assessment over synthetic OISD-118 inspection evidence.
+- **Failure Patterns:** cross-source investigation signals derived from work orders and incidents.
+- **Document Library:** validated PDF/DOCX ingestion, SHA-256 duplicate detection, chunking, indexing, and persistent inventory.
+- **Traceability:** evidence IDs, dataset hashes, methodology versions, analysis IDs, limitations, and component calculations.
+
+## How it works
 
 ```text
 React / Vite
-    │
+    │ REST
     ▼
 FastAPI ── LangGraph query router
-    ├── Expert Copilot ── hybrid retrieval ── optional Gemini synthesis
+    ├── Expert Copilot ── dense + BM25 retrieval ── cross-encoder ── optional Gemini
     ├── Maintenance Agent ── deterministic six-component score
     ├── Compliance Agent ── record-derived OISD-118 gap matrix
     └── Pattern Agent ── work orders + incidents ── NetworkX evidence graph
-           │
-           ├── ChromaDB + sentence-transformers + BM25 + cross-encoder
-           └── versioned methodology + SHA-256 evidence identity
+           └── ChromaDB persistence + versioned methodology + SHA-256 identity
 ```
 
-The copilot refuses when no relevant chunks are available. If chunks exist but `GEMINI_API_KEY` is absent, it returns citations and an explicit synthesis-unavailable message rather than silently generating content.
+### Deterministic versus generative responsibilities
 
-## Evidence shipped with the prototype
+| Responsibility | Approach |
+|---|---|
+| Maintenance score | Deterministic formula over work-order evidence |
+| Compliance status | Deterministic mapping over inspection records |
+| Failure patterns | Deterministic aggregation and graph construction |
+| Document retrieval | Dense and BM25 retrieval with reranking |
+| Natural-language synthesis | Optional Gemini generation from retrieved context |
+| Missing evidence | Explicit refusal or `status: no_data` |
 
-| Dataset | Runtime records | Scope |
+Gemini never creates specialist scores. If relevant chunks are absent, the Copilot returns a no-evidence response.
+
+## Evidence traceability
+
+Each specialist analysis identifies its input dataset, evidence records, methodology version, and deterministic analysis identity. Unknown equipment and standards return `status: no_data` rather than being presented as low risk or compliant.
+
+| Dataset | Records | Scope |
 |---|---:|---|
 | Work orders | 50 | Synthetic maintenance records across 15 equipment IDs |
-| Inspection reports | 6 | Synthetic OISD-118 evidence only: 2 compliant, 3 gaps, 1 critical |
-| Incident history | 11 | Independently valid records recovered from the original corrupt artifact |
+| Inspection reports | 6 | Synthetic OISD-118 evidence |
+| Incident history | 11 | Valid records recovered from a preserved corrupt artifact |
 
-The original incident artifact is preserved for audit testing. Its SHA-256, corrupt region and recovery boundary are documented in [data provenance](docs/data-provenance.md). No damaged record was inferred or regenerated.
+See [methodology](docs/METHODOLOGY.md) and [data provenance](docs/data-provenance.md).
 
-## Deterministic maintenance score
+## Verified results
 
-| Signal | Weight |
-|---|---:|
-| Dominant failure recurrence | 25% |
-| Recent incidents in exclusive age buckets | 20% |
-| Mean ordinal severity | 20% |
-| Mean downtime against dataset P90 | 15% |
-| Repeated dominant root cause | 10% |
-| Shrinking observed intervals | 10% |
+Backend tests cover endpoints, analytics, ingestion, corruption handling, and traceability. An offline authenticity evaluation covers known and unknown queries. Frontend CI validates deployment configuration, linting, and production build. The public application and all seven routes have been smoke-tested against the deployed API.
 
-See [the complete formulas and thresholds](docs/METHODOLOGY.md). The result is historical recurrence-risk analytics—not a trained predictive-maintenance model—and it does not output a future failure date.
+These checks are regression evidence for the prototype—not a claim of real-world model accuracy.
 
-## Document ingestion
+## Technology stack
 
-PDF and DOCX uploads are streamed with a configurable size limit, checked for extension/signature mismatch, parsed for text, chunked at sentence boundaries, indexed, and registered in a persistent manifest. SHA-256 duplicate detection returns HTTP 409. The document library displays only the backend inventory; no sample documents are represented as indexed unless they actually are.
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, Vite 5, Tailwind CSS, Recharts |
+| Backend | FastAPI, Python 3.11, Uvicorn |
+| Orchestration | LangGraph |
+| Retrieval | ChromaDB, sentence-transformers, BM25Okapi, CrossEncoder |
+| Optional synthesis | Google Gemini |
+| Evidence graph | NetworkX |
+| Processing | PyMuPDF, python-docx |
+| Deployment | Vercel frontend, Railway backend |
 
-Chunking targets approximately 400 words and carries the final two sentences into the next chunk. Dense and BM25 candidates are fused, then reranked by `cross-encoder/ms-marco-MiniLM-L-6-v2` when the retrieval service initializes. First initialization can download local embedding and reranker models.
+## Repository structure
 
-## Quick start
+```text
+backend/        agents, API, evidence schemas, services, tests, evaluation
+frontend/       seven lazy-loaded routes and reusable UI components
+docs/           architecture, methodology, contracts, provenance, submission assets
+demo/           timed demonstration script
+```
+
+## Local setup
+
+Prerequisites: Python 3.11 and Node.js 20+.
 
 ```bash
 git clone https://github.com/tauqxxr7/opsiq.git
-cd opsiq
-
-cd backend
+cd opsiq/backend
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
 pip install -r requirements-dev.txt
-cp ../.env.example .env  # Windows PowerShell: Copy-Item ../.env.example .env
+cp ../.env.example .env
 python -m uvicorn main:app --reload --port 8000
 ```
+
+In a second terminal:
 
 ```bash
 cd frontend
@@ -94,9 +130,25 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. A Gemini key is optional for health checks and deterministic specialist agents; it is required only for copilot synthesis after retrieval.
+Open `http://localhost:5173`. First retrieval initialization may download embedding and reranker models.
 
-## Verification
+## Environment variables
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `GEMINI_API_KEY` | Copilot synthesis only | Server-side Gemini credential |
+| `CHROMA_DB_PATH` | No | ChromaDB and ingestion-manifest path |
+| `CORS_ORIGINS` | Production | Comma-separated frontend origins |
+| `MAX_UPLOAD_SIZE_MB` | No | Upload cap; defaults to 20 |
+| `VITE_API_URL` | Frontend production | Absolute backend API URL including `/api` |
+
+Never commit `.env` files or API keys.
+
+## API reference
+
+Use the [deployed OpenAPI UI](https://opsiq-production-b20c.up.railway.app/docs), repository [API reference](docs/api_reference.md), and [API contracts](docs/API_CONTRACTS.md).
+
+## Testing and CI
 
 ```bash
 cd backend
@@ -107,51 +159,36 @@ python evaluation/run_evaluation.py
 cd ../frontend
 npm ci
 npm run lint
+npm run check:deployment
 npm run build
 ```
 
-The offline evaluation covers known and unknown specialist queries, deterministic traceability, cross-source pattern inputs, copilot refusal, and citation-field completeness. It is a small regression suite, not a claim of real-world model accuracy.
+## Responsible-use limitations
 
-## Environment
-
-| Variable | Required | Purpose |
-|---|---|---|
-| `GEMINI_API_KEY` | Copilot synthesis only | Gemini API credential; backend environment only |
-| `CHROMA_DB_PATH` | No | Persistent vector database and ingestion manifest path |
-| `CORS_ORIGINS` | Production | Comma-separated frontend origins |
-| `MAX_UPLOAD_SIZE_MB` | No | Upload cap; default 20 |
-| `VITE_API_URL` | Frontend production | Backend origin; frontend adds `/api` |
-
-Never commit `.env` or API keys. Railway needs a volume mounted for `CHROMA_DB_PATH`; otherwise indexed uploads are ephemeral.
-
-## Limitations and responsible use
-
-- Every bundled operational record is synthetic demonstration data.
-- Compliance covers only the six bundled OISD-118 rows and is not legal certification. Factory Act, DGMS and PESO are roadmap integrations, not current evidence claims.
-- Maintenance scores describe historical recurrence risk; they do not predict a component or failure date.
-- Pattern relationships are correlations and do not establish causality.
+- All bundled operational records are synthetic demonstration data.
+- Compliance covers only bundled OISD-118 evidence and is not legal certification.
+- Maintenance scores summarize historical recurrence evidence and do not predict a component or failure date.
+- Pattern relationships are investigation signals and do not establish causality.
 - Retrieval quality depends on uploaded document quality and coverage.
-- There is no authentication or plant tenancy in this prototype.
-- The evaluation corpus is intentionally small and deterministic; external validation is still required.
+- The prototype has no authentication, tenancy, or plant-system integration.
+- Safety, maintenance, and compliance decisions require authorized human review.
 
-## Project map
+## What OPSIQ does not claim
 
-```text
-backend/
-  agents/       specialist and copilot agents
-  api/          FastAPI routes and upload contracts
-  core/         configuration, state, evidence schemas, methodology versions
-  data/         synthetic runtime evidence
-  evaluation/   offline authenticity regression suite
-  services/     processing, retrieval, registry, evidence graph
-  tests/        endpoint, analytics, ingestion and corruption tests
-frontend/src/
-  pages/        seven lazy-loaded application routes
-  components/   reusable interface and charts
-docs/           methodology, API contracts and data provenance
-.github/         CI and repository metadata
-```
+OPSIQ does not claim real-time sensor monitoring, exact failure prediction, legal certification, causal diagnosis, guaranteed hallucination prevention, enterprise security certification, or validated financial savings.
 
-## License and author
+## Future roadmap
 
-Built by [Tauqeer Sameer Bharde](https://github.com/tauqxxr7) for ET AI Hackathon 2.0. Review the repository license before reuse.
+Controlled plant-data validation; authentication and tenant isolation; object storage and asynchronous ingestion; retrieval and load testing; human approval and audit workflows; enterprise connectors; and security hardening.
+
+## Documentation
+
+Start with the [documentation index](docs/README.md).
+
+## License
+
+Released under the [MIT License](LICENSE).
+
+## Author
+
+Built by [Tauqeer Bharde](https://github.com/tauqxxr7) for ET AI Hackathon 2.0, Problem Statement #8.

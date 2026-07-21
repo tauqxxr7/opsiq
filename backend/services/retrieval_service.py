@@ -92,5 +92,11 @@ class RetrievalService:
         return sorted(items, key=lambda item: item["relevance_score"], reverse=True)[:5]
 
     def count(self):
-        self._ensure_initialized()
-        return self.collection.count()
+        if self.collection is not None:
+            return self.collection.count()
+        import chromadb
+
+        collection = chromadb.PersistentClient(path=CHROMA_DB_PATH).get_or_create_collection(
+            "opsiq_documents", metadata={"hnsw:space": "cosine"}
+        )
+        return collection.count()

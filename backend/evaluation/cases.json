@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "cases": [
+    {"id": "maintenance-known", "type": "maintenance", "input": "P-201", "expected_status": "ok"},
+    {"id": "maintenance-unknown", "type": "maintenance", "input": "UNKNOWN-999", "expected_status": "no_data"},
+    {"id": "compliance-known", "type": "compliance", "input": "OISD-118", "expected_percentage": 33.33},
+    {"id": "compliance-unknown", "type": "compliance", "input": "DGMS", "expected_status": "no_data"},
+    {"id": "patterns-cross-source", "type": "patterns", "expected_sources": ["work_order", "incident_history"]},
+    {"id": "copilot-refusal", "type": "copilot_refusal", "expected_confidence": 0.0},
+    {"id": "copilot-citations", "type": "copilot_citations", "required_fields": ["doc_name", "page", "section", "relevance_score", "excerpt"]}
+  ]
+}

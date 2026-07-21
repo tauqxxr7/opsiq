@@ -20,7 +20,8 @@ export function getApiErrorMessage(error) {
   if (error.response.status >= 500) {
     return `The backend returned server error ${error.response.status}. Please try again.`;
   }
-  return `The backend rejected the request (${error.response.status}). Check the submitted data.`;
+  const detail = error.response.data?.detail;
+  return detail || `The backend rejected the request (${error.response.status}). Check the submitted data.`;
 }
 
 export const ask = (payload) => client.post("/query", payload).then((response) => response.data);
@@ -30,7 +31,9 @@ export const upload = (file, onProgress) => {
   return client.post("/documents/upload", body, { onUploadProgress: onProgress }).then((response) => response.data);
 };
 export const documentStats = () => client.get("/documents/stats").then((response) => response.data);
+export const documents = () => client.get("/documents").then((response) => response.data);
 export const maintenance = (id) => client.get(`/maintenance/${id}`).then((response) => response.data);
+export const maintenanceCatalog = () => client.get("/maintenance").then((response) => response.data);
 export const compliance = (id) => client.get(`/compliance/audit/${id}`).then((response) => response.data);
 export const patterns = () => client.get("/patterns").then((response) => response.data);
 

@@ -1,4 +1,3 @@
-﻿import google.generativeai as genai
 from core.config import GEMINI_API_KEY
 class ExpertCopilotAgent:
     def __init__(self,retrieval=None):self.retrieval=retrieval
@@ -7,6 +6,7 @@ class ExpertCopilotAgent:
         if not chunks:return {**state,"final_response":{"answer":"Insufficient documentation found to answer safely.","citations":[],"confidence":0.0,"follow_up_suggestions":[]},"error":"No grounded evidence"}
         context="\n\n".join(f'[{i+1}] {x["doc_name"]} p.{x["page"]}: {x["text"]}' for i,x in enumerate(chunks))
         if not GEMINI_API_KEY:return {**state,"final_response":{"answer":"The required evidence was retrieved, but response synthesis is unavailable until GEMINI_API_KEY is configured.","citations":self._citations(chunks),"confidence":self._confidence(chunks),"follow_up_suggestions":[]},"error":"LLM not configured"}
+        import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
         prompt=f"""You are OPSIQ Expert Copilot. Answer only from EVIDENCE. Cite claims as [1]. If evidence is insufficient, say so.\nQUESTION: {state['query']}\nEVIDENCE:\n{context}"""
         answer=genai.GenerativeModel("gemini-1.5-flash").generate_content(prompt).text

@@ -85,5 +85,16 @@ class MaintenanceAgent:
         values = {"recurrence_frequency": {"dominant_failure_count": failure_count}, "recent_incidents": buckets, "severity": {"mean_ordinal_severity": round(mean(severities), 2)}, "downtime_burden": {"average_hours": round(avg_downtime, 2), "dataset_p90_hours": round(baseline, 2)}, "repeated_root_cause": {"dominant_root_cause_count": cause_count}, "shrinking_failure_intervals": {"interval_days": intervals}}
         return values[name]
 
+    def catalog(self):
+        records = self._records()
+        equipment_ids = sorted({(row.equipment_id if hasattr(row, "equipment_id") else row["equipment_id"]).upper() for row in records})
+        analyses = [self.analyze(equipment_id) for equipment_id in equipment_ids]
+        return {
+            "status": "ok" if analyses else "no_data",
+            "equipment_count": len(equipment_ids),
+            "high_risk_count": sum(item.get("risk_level") in {"HIGH", "CRITICAL"} for item in analyses),
+            "equipment": analyses,
+        }
     def run(self, state):
         return {**state, "final_response": self.analyze(str(state.get("equipment_id") or ""))}
+

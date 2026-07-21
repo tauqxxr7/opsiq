@@ -1,6 +1,6 @@
 # API reference
 
-Local base URL: `http://localhost:8000`  
+Local base URL: `http://localhost:8000`
 Production API documentation: [Swagger UI](https://opsiq-production-b20c.up.railway.app/docs)
 
 All specialist datasets are synthetic demonstrations.

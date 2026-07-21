@@ -1,11 +1,25 @@
 ﻿import networkx as nx
+
+
 class KnowledgeGraph:
-    def __init__(self):self.graph=nx.MultiDiGraph()
-    def add_work_order(self,row):
-        self.graph.add_edge(row["equipment_id"],row["failure_type"],relation="experienced",wo_id=row["wo_id"])
-        self.graph.add_edge(row["failure_type"],row["root_cause"],relation="caused_by")
-    def recurring_patterns(self,minimum=2):
-        counts={}
-        for source,target,data in self.graph.edges(data=True):
-            if data.get("relation")=="experienced":counts[(source,target)]=counts.get((source,target),0)+1
-        return [{"equipment_id":k[0],"failure_type":k[1],"occurrences":v} for k,v in counts.items() if v>=minimum]
+    def __init__(self):
+        self.graph = nx.MultiDiGraph()
+
+    def add_record(self, record):
+        evidence = record["record_id"]
+        equipment = f'equipment:{record["equipment_id"]}'
+        failure = f'failure:{record["failure_type"]}'
+        self.graph.add_node(equipment, type="equipment", label=record["equipment_id"])
+        self.graph.add_node(failure, type="failure_mode", label=record["failure_type"])
+        self.graph.add_edge(equipment, failure, relation="experienced", evidence_id=evidence, source=record["source"])
+        if record["root_cause"]:
+            cause = f'cause:{record["root_cause"]}'
+            self.graph.add_node(cause, type="root_cause", label=record["root_cause"])
+            self.graph.add_edge(failure, cause, relation="caused_by", evidence_id=evidence, source=record["source"])
+        for precursor in record["precursors"]:
+            symptom = f"precursor:{precursor}"
+            self.graph.add_node(symptom, type="precursor", label=precursor)
+            self.graph.add_edge(symptom, failure, relation="precedes", evidence_id=evidence, source=record["source"])
+
+    def serialize(self):
+        return {"directed": True, "multigraph": True, "node_count": self.graph.number_of_nodes(), "edge_count": self.graph.number_of_edges(), "nodes": [{"id": node, **data} for node, data in self.graph.nodes(data=True)], "edges": [{"source": source, "target": target, **data} for source, target, data in self.graph.edges(data=True)]}

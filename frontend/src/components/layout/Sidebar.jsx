@@ -1,54 +1,41 @@
-import {
-  Bot,
-  Boxes,
-  LayoutDashboard,
-  Library,
-  Network,
-  ShieldCheck,
-  Wrench,
-  X,
-} from "lucide-react";
+import { Bot, Boxes, LayoutDashboard, Library, Network, ShieldCheck, Wrench, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const links = [
-  ["/", LayoutDashboard, "Command Centre", "Plant risk overview"],
-  ["/copilot", Bot, "Expert Copilot", "Ask your documents"],
-  ["/maintenance", Wrench, "Maintenance Intel", "Equipment health analytics"],
-  ["/compliance", ShieldCheck, "Compliance Audit", "OISD · Factory Act · PESO"],
-  ["/patterns", Network, "Failure Patterns", "Cross-asset correlation"],
-  ["/documents", Library, "Document Library", "Knowledge ingestion"],
-  ["/architecture", Boxes, "Architecture", "System design"],
+  ["/", LayoutDashboard, "Overview"],
+  ["/copilot", Bot, "Copilot"],
+  ["/maintenance", Wrench, "Maintenance"],
+  ["/compliance", ShieldCheck, "Compliance"],
+  ["/patterns", Network, "Failure patterns"],
+  ["/documents", Library, "Document library"],
+  ["/architecture", Boxes, "Architecture"],
 ];
 
 export default function Sidebar({ open, setOpen }) {
   return (
-    <aside className={`${open ? "translate-x-0" : "-translate-x-full"} fixed inset-y-0 left-0 z-30 w-72 border-r border-border bg-surface p-5 transition md:translate-x-0`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-xl font-bold tracking-[.18em]">OPSIQ</div>
-          <div className="text-[10px] uppercase tracking-widest text-text-secondary">Industrial Intelligence</div>
+    <>
+      {open && <button className="fixed inset-0 z-30 bg-slate-950/45 lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation overlay" />}
+      <aside className={`${open ? "translate-x-0" : "-translate-x-full"} fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-white transition-transform lg:translate-x-0`} aria-label="Primary navigation">
+        <div className="flex h-20 items-center justify-between border-b border-white/10 px-5">
+          <div>
+            <p className="text-lg font-bold tracking-[0.16em]">OPSIQ</p>
+            <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-sidebar-muted">Industrial intelligence</p>
+          </div>
+          <button className="rounded-md p-2 text-sidebar-muted lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X size={19} /></button>
         </div>
-        <button className="md:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X /></button>
-      </div>
-      <nav className="mt-10 space-y-1">
-        {links.map(([to, Icon, label, subtitle]) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === "/"}
-            title={subtitle}
-            aria-label={`${label}: ${subtitle}`}
-            onClick={() => setOpen(false)}
-            className={({ isActive }) => `flex items-center gap-3 rounded-lg px-3 py-3 text-sm ${isActive ? "bg-primary/15 text-primary" : "text-text-secondary hover:bg-card hover:text-text-primary"}`}
-          >
-            <Icon size={17} />{label}
-          </NavLink>
-        ))}
-      </nav>
-      <div className="absolute bottom-5 left-5 right-5 rounded-lg border border-secondary/20 bg-secondary/5 p-3 text-xs">
-        <div className="flex items-center gap-2 text-secondary"><span className="h-2 w-2 animate-pulse rounded-full bg-secondary" />All systems operational</div>
-        <p className="mt-2 text-text-secondary">OPSIQ v1.0 · Synthetic Demo Mode</p>
-      </div>
-    </aside>
+        <nav className="flex-1 space-y-1 px-3 py-6">
+          {links.map(([to, Icon, label]) => (
+            <NavLink key={to} to={to} end={to === "/"} onClick={() => setOpen(false)}
+              className={({ isActive }) => `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-white text-sidebar shadow-sm" : "text-sidebar-muted hover:bg-white/10 hover:text-white"}`}>
+              <Icon size={17} aria-hidden="true" /><span>{label}</span>
+            </NavLink>
+          ))}
+        </nav>
+        <div className="border-t border-white/10 px-5 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-sidebar-muted">Evidence scope</p>
+          <p className="mt-1 text-xs leading-5 text-white/75">Synthetic industrial demonstration data</p>
+        </div>
+      </aside>
+    </>
   );
 }

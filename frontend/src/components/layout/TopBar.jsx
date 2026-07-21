@@ -1,2 +1,16 @@
+import { Menu } from "lucide-react";
 
-import {Menu,Search,Bell} from "lucide-react";export default function TopBar({setOpen}){return <header className="flex h-16 items-center gap-4 border-b border-border bg-base/80 px-4 backdrop-blur md:px-8"><button className="md:hidden" onClick={()=>setOpen(true)}><Menu/></button><div className="hidden max-w-md flex-1 items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 md:flex"><Search size={15} className="text-muted"/><span className="text-xs text-muted">Search equipment, standards, work orders…</span></div><div className="ml-auto flex items-center gap-4"><Bell size={17} className="text-text-secondary"/><div className="h-8 w-8 rounded-full bg-primary/20 text-center text-xs font-semibold leading-8 text-primary">TB</div></div></header>}
+export default function TopBar({ setOpen }) {
+  return (
+    <header className="sticky top-0 z-20 flex h-16 items-center border-b border-border bg-surface/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+      <button className="rounded-md p-2 text-text-secondary lg:hidden" onClick={() => setOpen(true)} aria-label="Open navigation">
+        <Menu size={20} />
+      </button>
+      <div className="ml-3 lg:ml-0">
+        <p className="text-sm font-semibold text-text-primary">Operations intelligence workspace</p>
+        <p className="hidden text-xs text-muted sm:block">Evidence-derived analytics · synthetic demonstration data</p>
+      </div>
+      <span className="ml-auto rounded-md bg-card px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-text-secondary">Demo environment</span>
+    </header>
+  );
+}

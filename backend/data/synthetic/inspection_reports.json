@@ -3,36 +3,66 @@
         "clause":  "4.3.2",
         "requirement":  "Atmospheric testing before confined-space entry",
         "status":  "COMPLIANT",
-        "evidence":  "Gas test register TF-2026-014"
+        "evidence":  "Gas test register TF-2026-014",
+        "record_id":  "INS-OISD118-001",
+        "standard":  "OISD-118",
+        "severity":  "LOW",
+        "evidence_source":  "Gas test register TF-2026-014",
+        "remediation":  "Retain the current gas-test register and verify it before every entry."
     },
     {
         "clause":  "6.1.4",
         "requirement":  "Valid hot-work permit system",
         "status":  "CRITICAL",
-        "evidence":  "Permit expired on inspection date"
+        "evidence":  "Permit expired on inspection date",
+        "record_id":  "INS-OISD118-002",
+        "standard":  "OISD-118",
+        "severity":  "CRITICAL",
+        "evidence_source":  "Permit expired on inspection date",
+        "remediation":  "Renew the hot-work permit and prevent work until authorization is valid."
     },
     {
         "clause":  "7.2.1",
         "requirement":  "Emergency isolation signage",
         "status":  "GAP",
-        "evidence":  "Two valves lacked durable tags"
+        "evidence":  "Two valves lacked durable tags",
+        "record_id":  "INS-OISD118-003",
+        "standard":  "OISD-118",
+        "severity":  "HIGH",
+        "evidence_source":  "Two valves lacked durable tags",
+        "remediation":  "Install durable emergency-isolation tags on both identified valves."
     },
     {
         "clause":  "8.4.3",
         "requirement":  "Calibrated gas detector records",
         "status":  "GAP",
-        "evidence":  "Calibration certificate unavailable"
+        "evidence":  "Calibration certificate unavailable",
+        "record_id":  "INS-OISD118-004",
+        "standard":  "OISD-118",
+        "severity":  "HIGH",
+        "evidence_source":  "Calibration certificate unavailable",
+        "remediation":  "Obtain a valid calibration certificate before using the detector."
     },
     {
         "clause":  "9.1.2",
         "requirement":  "Contractor induction evidence",
         "status":  "GAP",
-        "evidence":  "Attendance sheet incomplete"
+        "evidence":  "Attendance sheet incomplete",
+        "record_id":  "INS-OISD118-005",
+        "standard":  "OISD-118",
+        "severity":  "HIGH",
+        "evidence_source":  "Attendance sheet incomplete",
+        "remediation":  "Complete and retain contractor induction attendance evidence."
     },
     {
         "clause":  "10.2.1",
         "requirement":  "Bund wall integrity inspection",
         "status":  "COMPLIANT",
-        "evidence":  "Inspection IR-TF-028"
+        "evidence":  "Inspection IR-TF-028",
+        "record_id":  "INS-OISD118-006",
+        "standard":  "OISD-118",
+        "severity":  "LOW",
+        "evidence_source":  "Inspection IR-TF-028",
+        "remediation":  "Continue scheduled bund-wall integrity inspections and retain records."
     }
 ]

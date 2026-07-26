@@ -18,7 +18,10 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Loading ML models...")
     retrieval = RetrievalService()
+    retrieval._ensure_initialized()
+    logger.info("Models loaded. Collection: %s chunks", retrieval.collection.count())
     if retrieval.count() == 0:
         processor = DocumentProcessor()
         synthetic_directory = Path(__file__).parent / "data" / "synthetic"

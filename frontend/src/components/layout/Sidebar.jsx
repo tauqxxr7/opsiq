@@ -2,7 +2,7 @@ import { Bot, Boxes, LayoutDashboard, Library, Network, ShieldCheck, Wrench, X }
 import { NavLink } from "react-router-dom";
 
 const links = [
-  ["/", LayoutDashboard, "Overview"],
+  ["/dashboard", LayoutDashboard, "Overview"],
   ["/copilot", Bot, "Copilot"],
   ["/maintenance", Wrench, "Maintenance"],
   ["/compliance", ShieldCheck, "Compliance"],
@@ -25,8 +25,8 @@ export default function Sidebar({ open, setOpen }) {
         </div>
         <nav className="flex-1 space-y-1 px-3 py-6">
           {links.map(([to, Icon, label]) => (
-            <NavLink key={to} to={to} end={to === "/"} onClick={() => setOpen(false)}
-              className={({ isActive }) => `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "bg-white text-sidebar shadow-sm" : "text-sidebar-muted hover:bg-white/10 hover:text-white"}`}>
+            <NavLink key={to} to={to} onClick={() => setOpen(false)}
+              className={({ isActive }) => `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? "nav-active bg-white text-sidebar shadow-sm" : "text-sidebar-muted hover:bg-white/10 hover:text-white"}`}>
               <Icon size={17} aria-hidden="true" /><span>{label}</span>
             </NavLink>
           ))}

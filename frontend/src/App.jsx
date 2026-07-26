@@ -19,14 +19,15 @@ export default function App() {
       <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 lg:p-8">
         <Suspense fallback={<LoadingState message="Loading OPSIQ workspace..." />}>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/copilot" element={<ExpertCopilot />} />
             <Route path="/maintenance" element={<MaintenanceIntel />} />
             <Route path="/compliance" element={<ComplianceAudit />} />
             <Route path="/patterns" element={<FailurePatterns />} />
             <Route path="/documents" element={<DocumentLibrary />} />
             <Route path="/architecture" element={<ArchitecturePage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Suspense>
       </main>

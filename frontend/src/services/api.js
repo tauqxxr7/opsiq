@@ -6,14 +6,14 @@ const apiBaseUrl = resolveApiBaseUrl(import.meta.env.VITE_API_URL, {
 });
 
 const client = axios.create({
-  timeout: 30000,
+  timeout: 90000,
 });
 
 const endpoint = (path) => joinApiUrl(apiBaseUrl, path);
 
 export function getApiErrorMessage(error) {
   if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
-    return "The backend request timed out after 30 seconds. Please try again.";
+    return "The backend request timed out after 90 seconds. Please try again.";
   }
   if (!error.response) {
     return "The backend is unavailable. Check the API URL and service connectivity.";

@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 import logging
 from pathlib import Path
@@ -8,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api import compliance, documents, maintenance, patterns, query
 from core.config import CORS_ORIGINS
 from core.orchestrator import build_graph
+from keepalive import ping_self
 from services.document_processor import DocumentProcessor
 from services.retrieval_service import RetrievalService
 
@@ -29,7 +31,15 @@ async def lifespan(app: FastAPI):
                 logger.warning("Auto-index failed for %s: %s", synthetic_file.name, error)
     app.state.retrieval_service = retrieval
     app.state.graph = build_graph(retrieval)
-    yield
+    keepalive_task = asyncio.create_task(ping_self())
+    try:
+        yield
+    finally:
+        keepalive_task.cancel()
+        try:
+            await keepalive_task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(

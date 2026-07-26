@@ -6,7 +6,7 @@ import Panel from "../components/ui/Panel";
 import StatusBadge from "../components/ui/StatusBadge";
 import { EmptyState, ErrorState } from "../components/ui/StatePanel";
 import { compliance, getApiErrorMessage } from "../services/api";
-import { ClipboardCheck, FileCheck, ShieldAlert, TriangleAlert } from "lucide-react";
+import { ClipboardCheck, FileCheck, FileText, ShieldAlert, TriangleAlert } from "lucide-react";
 
 export default function ComplianceAudit() {
   const [data, setData] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [reload, setReload] = useState(0);
@@ -24,7 +24,7 @@ export default function ComplianceAudit() {
         <MetricCard label="Critical findings" value={data.summary.critical} detail="Highest-priority gaps" icon={TriangleAlert} tone="text-critical" />
       </div>
       <Panel title="OISD-118 evidence matrix" description={`Analysis ${data.metadata.analysis_id} · values returned by the compliance API`} flush>
-        <div className="overflow-x-auto"><table className="data-table w-full min-w-[900px]"><thead className="bg-card"><tr><th>Record / clause</th><th>Requirement</th><th>Evidence source</th><th>Status</th><th>Remediation</th></tr></thead><tbody>{data.matrix.map((row) => <tr key={row.record_id}><td><span className="font-mono font-medium text-primary">{row.record_id}</span><br /><span className="text-xs text-muted">{row.clause}</span></td><td className="max-w-xs">{row.requirement}</td><td className="max-w-xs text-text-secondary">{row.evidence_source}</td><td><StatusBadge tone={row.status === "CRITICAL" ? "red" : row.status === "GAP" ? "amber" : "green"}>{row.status}</StatusBadge></td><td className="max-w-sm text-text-secondary">{row.remediation}</td></tr>)}</tbody></table></div>
+        <div className="overflow-x-auto"><table className="data-table w-full min-w-[900px]"><thead className="bg-card"><tr><th>Record / clause</th><th>Requirement</th><th>Evidence source</th><th>Status</th><th className="hidden md:table-cell">Remediation</th></tr></thead><tbody>{data.matrix.map((row) => <tr className="evidence-row" key={row.record_id}><td><span className="font-mono font-medium text-primary">{row.record_id}</span><br /><span className="text-xs text-muted">{row.clause}</span></td><td className="max-w-xs">{row.requirement}</td><td className="max-w-xs"><span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs text-primary"><FileText size={12} aria-hidden="true" />{row.evidence_source}</span></td><td><StatusBadge tone={row.status === "CRITICAL" ? "red" : row.status === "GAP" ? "amber" : "green"}>{row.status}</StatusBadge></td><td className="hidden max-w-sm text-text-secondary md:table-cell">{row.remediation}</td></tr>)}</tbody></table></div>
       </Panel>
       <Panel title="Prioritised corrective actions" description="Ordered by the deterministic compliance analysis.">
         <ol className="divide-y divide-border">{data.corrective_actions.map((action) => <li className="grid gap-2 py-3 first:pt-0 last:pb-0 sm:grid-cols-[36px_1fr_auto]" key={action.record_id}><span className="font-mono text-sm font-semibold text-primary">#{action.rank}</span><p className="text-sm">{action.remediation}</p><span className="font-mono text-xs text-muted">{action.record_id}</span></li>)}</ol>

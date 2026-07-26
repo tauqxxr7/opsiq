@@ -1,3 +1,12 @@
 export default function MetricCard({ label, value, detail, icon: Icon, tone = "text-primary" }) {
-  return <article className="card-hover rounded-lg border border-border bg-surface p-4 shadow-panel"><div className="flex items-center justify-between gap-3"><p className="text-xs font-medium text-text-secondary">{label}</p>{Icon && <Icon className={tone} size={17} aria-hidden="true" />}</div><p className={`metric-value mt-3 text-2xl font-semibold tabular-nums ${tone}`}>{value}</p><p className="mt-1 text-xs leading-5 text-muted">{detail}</p></article>;
+  return (
+    <article className="card-hover group rounded-xl border border-border bg-surface p-5 shadow-panel">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-muted">{label}</p>
+        {Icon && <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10"><Icon className={tone} size={16} aria-hidden="true" /></div>}
+      </div>
+      <p className={`metric-value mb-1 font-mono text-3xl font-bold tabular-nums ${tone}`}>{value}</p>
+      <p className="text-xs leading-relaxed text-text-secondary">{detail}</p>
+    </article>
+  );
 }

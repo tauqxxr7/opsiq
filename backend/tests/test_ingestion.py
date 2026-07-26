@@ -77,3 +77,28 @@ def test_document_count_does_not_initialize_embedding_models(monkeypatch, tmp_pa
     service = retrieval_service.RetrievalService()
     assert service.count() == 7
     assert service.initialized is False
+
+
+def test_document_processor_reads_synthetic_json(tmp_path):
+    import json
+    from services.document_processor import DocumentProcessor
+
+    source = tmp_path / "work_orders.json"
+    source.write_text(
+        json.dumps([
+            {
+                "wo_id": "WO-1",
+                "equipment_id": "P-201",
+                "failure_type": "Seal failure",
+                "root_cause": "Coupling misalignment",
+            }
+        ]),
+        encoding="utf-8",
+    )
+
+    chunks = DocumentProcessor().process(source)
+
+    assert len(chunks) == 1
+    assert chunks[0]["section"] == "P-201"
+    assert chunks[0]["doc_type"] == "Maintenance Record"
+    assert "Seal failure" in chunks[0]["text"]

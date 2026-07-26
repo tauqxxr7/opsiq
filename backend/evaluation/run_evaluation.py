@@ -21,7 +21,7 @@ def evaluate():
         elif kind=="compliance":
             output=ComplianceAgent().analyze(case["input"]); passed=output.get("status")==case.get("expected_status") if "expected_status" in case else output["compliance_percentage"]==case["expected_percentage"]
         elif kind=="patterns": output=PatternAgent().analyze();passed=all(source in output["source_counts"] for source in case["expected_sources"])
-        elif kind=="copilot_refusal": output=ExpertCopilotAgent().run({"query":"unsupported","retrieved_chunks":[]})["final_response"];passed=output["confidence"]==case["expected_confidence"] and output["citations"]==[] and "Insufficient" in output["answer"]
+        elif kind=="copilot_refusal": output=ExpertCopilotAgent().run({"query":"unsupported","retrieved_chunks":[]})["final_response"];passed=output["confidence"]==case["expected_confidence"] and output["citations"]==[] and "No relevant indexed evidence" in output["answer"]
         else:
             chunks=[{"doc_name":"test.pdf","page":2,"section":"4.1","relevance_score":.8,"text":"Grounded evidence excerpt."}]
             output=ExpertCopilotAgent().run({"query":"test","retrieved_chunks":chunks})["final_response"]

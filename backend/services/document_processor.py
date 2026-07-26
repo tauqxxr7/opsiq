@@ -1,4 +1,5 @@
 import hashlib
+import json
 import re
 from io import BytesIO
 from pathlib import Path
@@ -17,7 +18,33 @@ class DocumentProcessor:
             from docx import Document
             document = Document(BytesIO(path.read_bytes()))
             return self._chunks(chr(10).join(paragraph.text for paragraph in document.paragraphs), name, 1, doc_type, digest)
+        if path.suffix.lower() == ".json":
+            records = json.loads(path.read_text(encoding="utf-8-sig"))
+            if not isinstance(records, list):
+                raise ValueError("Synthetic JSON evidence must contain a list of records")
+            return [
+                {
+                    "text": self._record_text(record),
+                    "doc_name": name,
+                    "page": index,
+                    "section": self._record_section(record),
+                    "doc_type": doc_type or self._type(name),
+                    "chunk_id": f"{digest[:16]}_r{index}",
+                }
+                for index, record in enumerate(records, 1)
+                if isinstance(record, dict) and record
+            ]
         raise ValueError(f"Unsupported file type: {path.suffix}")
+
+    def _record_text(self, record):
+        return ". ".join(
+            f"{key.replace('_', ' ').title()}: {value}"
+            for key, value in record.items()
+            if value not in (None, "", [])
+        )
+
+    def _record_section(self, record):
+        return str(record.get("equipment_id") or record.get("standard") or record.get("record_id") or "Synthetic evidence")
 
     def _chunks(self, text, name, page, doc_type, digest):
         sentences = [sentence.strip() for sentence in re.split(r"(?<=[.!?])\s+", text.strip()) if sentence.strip()]

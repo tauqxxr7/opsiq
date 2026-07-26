@@ -3,7 +3,14 @@ class ExpertCopilotAgent:
     def __init__(self,retrieval=None):self.retrieval=retrieval
     def run(self,state):
         chunks=(self.retrieval.hybrid_retrieve(state["query"]) if self.retrieval else state.get("retrieved_chunks",[]))
-        if not chunks:return {**state,"final_response":{"answer":"Insufficient documentation found to answer safely.","citations":[],"confidence":0.0,"follow_up_suggestions":[]},"error":"No grounded evidence"}
+        if not chunks:
+            answer = (
+                "No relevant indexed evidence was found for this question. "
+                "OPSIQ pre-loads the bundled synthetic work-order, inspection, and incident records "
+                "when the knowledge index is empty. Upload industrial documents via the Document "
+                "Library to enable domain-specific retrieval."
+            )
+            return {**state,"final_response":{"answer":answer,"citations":[],"confidence":0.0,"follow_up_suggestions":[]},"error":"No grounded evidence"}
         context="\n\n".join(f'[{i+1}] {x["doc_name"]} p.{x["page"]}: {x["text"]}' for i,x in enumerate(chunks))
         if not GEMINI_API_KEY:return {**state,"final_response":{"answer":"The required evidence was retrieved, but response synthesis is unavailable until GEMINI_API_KEY is configured.","citations":self._citations(chunks),"confidence":self._confidence(chunks),"follow_up_suggestions":[]},"error":"LLM not configured"}
         import google.generativeai as genai

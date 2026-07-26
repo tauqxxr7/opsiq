@@ -18,7 +18,7 @@ const edges = [["user", "react"], ["react", "api"], ["api", "graph"], ["graph", 
 
 export default function ArchitecturePage() {
   const [selected, setSelected] = useState("graph"); const current = nodes.find((node) => node[0] === selected);
-  return <div className="space-y-6">
+  return <div className="page-enter page-enter-active space-y-6">
     <PageHeader eyebrow="Technical reference" title="System architecture" description="Traceable specialist workflows combining deterministic industrial analytics with evidence-grounded retrieval." />
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
       <Panel title="Request and evidence flow" description="Select a component to inspect its implemented responsibility.">

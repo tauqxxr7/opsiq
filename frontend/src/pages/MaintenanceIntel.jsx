@@ -22,7 +22,7 @@ export default function MaintenanceIntel() {
     return () => { ignore = true; };
   }, [id, reload]);
 
-  return <div className="space-y-6">
+  return <div className="page-enter page-enter-active space-y-6">
     <PageHeader eyebrow="Reliability intelligence" title="Maintenance intelligence" description="Historical recurrence-risk scoring from synthetic work-order evidence. This analysis does not predict a future failure date." actions={<label className="block text-xs font-medium text-text-secondary">Equipment<select aria-label="Equipment ID" value={id} onChange={(event) => setId(event.target.value)} className="ml-2 rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary">{equipmentIds.map((equipmentId) => <option key={equipmentId}>{equipmentId}</option>)}</select></label>} />
     {loading && <Panel><LoadingState message="Analysing work-order evidence..." /></Panel>}
     {!loading && error && <ErrorState message={error} onRetry={() => setReload((value) => value + 1)} />}
@@ -30,7 +30,7 @@ export default function MaintenanceIntel() {
     {!loading && data?.status === "ok" && <>
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <Panel title="Recurrence risk" description="Six-component deterministic score.">
-          <div className="flex items-end justify-between"><p className="text-4xl font-semibold tabular-nums">{data.risk_score}<span className="text-sm font-normal text-muted"> / 100</span></p><StatusBadge tone={data.risk_level === "CRITICAL" ? "red" : "amber"}>{data.risk_level}</StatusBadge></div>
+          <div className="flex items-end justify-between"><p className="risk-score metric-value text-4xl font-semibold tabular-nums">{data.risk_score}<span className="text-sm font-normal text-muted"> / 100</span></p><StatusBadge tone={data.risk_level === "CRITICAL" ? "red" : "amber"}>{data.risk_level}</StatusBadge></div>
           <p className="mt-5 text-xs text-text-secondary">{data.evidence.length} work orders  /  {Math.round(data.confidence * 100)}% evidence confidence</p>
         </Panel>
         <Panel title="Observed failure intervals" description="Days between dated records; no future date is inferred."><HealthTimeline intervals={data.recurrence.interval_days} /></Panel>

@@ -11,7 +11,7 @@ import { ClipboardCheck, FileCheck, ShieldAlert, TriangleAlert } from "lucide-re
 export default function ComplianceAudit() {
   const [data, setData] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [reload, setReload] = useState(0);
   useEffect(() => { let ignore = false; setLoading(true); compliance("OISD-118").then((result) => { if (!ignore) setData(result); }).catch((requestError) => { if (!ignore) setError(getApiErrorMessage(requestError)); }).finally(() => { if (!ignore) setLoading(false); }); return () => { ignore = true; }; }, [reload]);
-  return <div className="space-y-6">
+  return <div className="page-enter page-enter-active space-y-6">
     <PageHeader eyebrow="Evidence-gap assessment" title="Compliance audit" description="Deterministic prototype assessment against synthetic OISD-118 inspection evidence. It is not legal advice or certification." actions={<StatusBadge tone="blue">OISD-118</StatusBadge>} />
     {loading && <Panel><LoadingState message="Mapping OISD-118 evidence..." /></Panel>}
     {!loading && error && <ErrorState message={error} onRetry={() => setReload((value) => value + 1)} />}

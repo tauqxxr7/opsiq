@@ -11,7 +11,7 @@ export default function DocumentLibrary() {
   const refresh = () => documents().then((data) => { setInventory(data.documents); setInventoryError(""); }).catch((error) => setInventoryError(getApiErrorMessage(error)));
   useEffect(() => { let active = true; documents().then((data) => { if (active) setInventory(data.documents); }).catch((error) => { if (active) setInventoryError(getApiErrorMessage(error)); }); return () => { active = false; }; }, [reload]);
   const handleFiles = async (files) => { if (!files?.[0]) return; setBusy(true); setProgress(0); setResult(null); try { const response = await upload(files[0], (event) => { if (event.total) setProgress(Math.round((event.loaded / event.total) * 100)); }); setResult(response); await refresh(); } catch (error) { setResult({ error: getApiErrorMessage(error) }); } finally { setBusy(false); } };
-  return <div className="space-y-6">
+  return <div className="page-enter page-enter-active space-y-6">
     <PageHeader eyebrow="Knowledge ingestion" title="Document library" description="Add PDF or DOCX evidence to the retrieval corpus. Backend size limits apply and identical content is rejected by SHA-256." />
     <div className="grid gap-6 xl:grid-cols-[minmax(320px,.75fr)_minmax(0,1.25fr)]">
       <div className="space-y-6"><UploadZone onFiles={handleFiles} busy={busy} />{busy && <div className="mt-3"><div className="flex justify-between text-xs text-text-secondary"><span>Uploading and processing</span><span>{progress}%</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border"><div className="h-full bg-primary" style={{ width: `${progress}%` }} /></div></div>}

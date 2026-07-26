@@ -11,7 +11,7 @@ import { getApiErrorMessage, patterns } from "../services/api";
 export default function FailurePatterns() {
   const [data, setData] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [reload, setReload] = useState(0);
   useEffect(() => { let ignore = false; setLoading(true); patterns().then((result) => { if (!ignore) setData(result); }).catch((requestError) => { if (!ignore) setError(getApiErrorMessage(requestError)); }).finally(() => { if (!ignore) setLoading(false); }); return () => { ignore = true; }; }, [reload]);
-  return <div className="space-y-6">
+  return <div className="page-enter page-enter-active space-y-6">
     <PageHeader eyebrow="Cross-source correlation" title="Failure patterns" description="Deterministic associations across work orders and incident history. Correlation does not establish causality." />
     {loading && <Panel><LoadingState message="Correlating evidence records..." /></Panel>}
     {!loading && error && <ErrorState message={error} onRetry={() => setReload((value) => value + 1)} />}

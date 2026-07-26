@@ -29,7 +29,7 @@ export default function Dashboard() {
   const evidence = equipment.flatMap((item) => item.evidence.map((record) => ({ ...record, equipment_id: item.equipment_id }))).sort((left, right) => right.date.localeCompare(left.date)).slice(0, 5);
   const priority = [...equipment].sort((left, right) => right.risk_score - left.risk_score).slice(0, 5);
 
-  return <div className="space-y-6">
+  return <div className="page-enter page-enter-active space-y-6">
     <PageHeader eyebrow="Decision overview" title="Operational intelligence" description="Evidence-grounded maintenance, compliance, failure-pattern, and knowledge signals from the current synthetic demonstration corpus." actions={<span className="rounded bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary">Synthetic evidence</span>} />
     {unavailable.length > 0 && <ErrorState message={`Unavailable sources: ${unavailable.join(", ")}. Healthy API results remain visible.`} onRetry={() => setReload((value) => value + 1)} />}
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

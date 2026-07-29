@@ -1,40 +1,73 @@
 import re
+import threading
 
 from core.config import CHROMA_DB_PATH
 
+_instance_lock = threading.Lock()
+
 
 class RetrievalService:
+    _instances = {}
+
+    def __new__(cls):
+        instance_key = str(CHROMA_DB_PATH)
+        if instance_key not in cls._instances:
+            with _instance_lock:
+                if instance_key not in cls._instances:
+                    instance = super().__new__(cls)
+                    instance._configured = False
+                    instance._model_lock = threading.Lock()
+                    cls._instances[instance_key] = instance
+        return cls._instances[instance_key]
+
     def __init__(self):
-        self.collection = None
-        self.encoder = None
-        self.reranker = None
-        self.bm25 = None
-        self.ids = []
-        self.documents = []
-        self.metadatas = []
-        self._np = None
-        self._bm25_class = None
+        if self._configured:
+            return
+        with _instance_lock:
+            if self._configured:
+                return
+            self.collection = None
+            self.encoder = None
+            self.reranker = None
+            self.bm25 = None
+            self.ids = []
+            self.documents = []
+            self.metadatas = []
+            self._np = None
+            self._bm25_class = None
+            self._configured = True
 
     @property
     def initialized(self):
         return self.collection is not None
 
+    def initialize(self):
+        """Load the vector store and ML models exactly once for this persistence path."""
+        self._ensure_initialized()
+        return self
+
     def _ensure_initialized(self):
         if self.initialized:
             return
-        import chromadb
-        import numpy as np
-        from rank_bm25 import BM25Okapi
-        from sentence_transformers import CrossEncoder, SentenceTransformer
+        with self._model_lock:
+            if self.initialized:
+                return
+            import chromadb
+            import numpy as np
+            from rank_bm25 import BM25Okapi
+            from sentence_transformers import CrossEncoder, SentenceTransformer
 
-        self._np = np
-        self._bm25_class = BM25Okapi
-        self.collection = chromadb.PersistentClient(path=CHROMA_DB_PATH).get_or_create_collection(
-            "opsiq_documents", metadata={"hnsw:space": "cosine"}
-        )
-        self.encoder = SentenceTransformer("all-MiniLM-L6-v2")
-        self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-        self._refresh()
+            self._np = np
+            self._bm25_class = BM25Okapi
+            collection = chromadb.PersistentClient(path=CHROMA_DB_PATH).get_or_create_collection(
+                "opsiq_documents", metadata={"hnsw:space": "cosine"}
+            )
+            encoder = SentenceTransformer("all-MiniLM-L6-v2")
+            reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+            self.collection = collection
+            self.encoder = encoder
+            self.reranker = reranker
+            self._refresh()
 
     def _tokens(self, text):
         return re.findall(r"[a-z0-9-]+", text.lower())

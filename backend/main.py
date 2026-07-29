@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 import logging
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import compliance, documents, maintenance, patterns, query
@@ -13,15 +13,14 @@ from keepalive import ping_self
 from services.document_processor import DocumentProcessor
 from services.retrieval_service import RetrievalService
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+app_state = {"models_ready": False, "startup_error": None}
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.info("Loading ML models...")
-    retrieval = RetrievalService()
-    retrieval._ensure_initialized()
-    logger.info("Models loaded. Collection: %s chunks", retrieval.collection.count())
+
+def _initialize_models_and_evidence(retrieval):
+    retrieval.initialize()
     if retrieval.count() == 0:
         processor = DocumentProcessor()
         synthetic_directory = Path(__file__).parent / "data" / "synthetic"
@@ -32,17 +31,36 @@ async def lifespan(app: FastAPI):
                 logger.info("Auto-indexed %s: %s chunks", synthetic_file.name, len(chunks))
             except Exception as error:
                 logger.warning("Auto-index failed for %s: %s", synthetic_file.name, error)
+
+
+async def load_models_background(retrieval):
+    """Load ML models and bundled evidence without blocking the application event loop."""
+    try:
+        logger.info("Background model loading started...")
+        await asyncio.to_thread(_initialize_models_and_evidence, retrieval)
+        app_state["models_ready"] = True
+        logger.info("Models ready. Collection: %s chunks", retrieval.count())
+    except asyncio.CancelledError:
+        raise
+    except Exception as error:
+        app_state["startup_error"] = str(error)
+        logger.exception("Model loading failed")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app_state.update(models_ready=False, startup_error=None)
+    retrieval = RetrievalService()
     app.state.retrieval_service = retrieval
     app.state.graph = build_graph(retrieval)
+    model_task = asyncio.create_task(load_models_background(retrieval))
     keepalive_task = asyncio.create_task(ping_self())
     try:
         yield
     finally:
+        model_task.cancel()
         keepalive_task.cancel()
-        try:
-            await keepalive_task
-        except asyncio.CancelledError:
-            pass
+        await asyncio.gather(model_task, keepalive_task, return_exceptions=True)
 
 
 app = FastAPI(
@@ -67,4 +85,18 @@ app.include_router(patterns.router, prefix="/api/patterns", tags=["Patterns"])
 
 @app.get("/health")
 async def health():
+    """Return liveness immediately, independently of background model readiness."""
     return {"status": "operational", "service": "OPSIQ"}
+
+
+
+@app.get("/ready")
+async def readiness():
+    """Report whether the retrieval models completed background initialization."""
+    if not app_state["models_ready"]:
+        return Response(
+            content='{"status":"loading","models_ready":false}',
+            status_code=503,
+            media_type="application/json",
+        )
+    return {"status": "ready", "models_ready": True}

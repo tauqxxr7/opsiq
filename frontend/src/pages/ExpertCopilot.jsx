@@ -1,5 +1,5 @@
 import { FileText, Send } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CitationChip from "../components/ui/CitationChip";
 import ConfidenceBar from "../components/ui/ConfidenceBar";
 import PageHeader from "../components/ui/PageHeader";
@@ -14,6 +14,8 @@ export default function ExpertCopilot() {
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(null);
   const [collectionSize, setCollectionSize] = useState(null);
+  const [warmup, setWarmup] = useState(null);
+  const retryTimer = useRef(null);
   const noDocuments = collectionSize === 0;
 
   useEffect(() => {
@@ -22,17 +24,29 @@ export default function ExpertCopilot() {
     return () => { ignore = true; };
   }, []);
 
-  const send = async () => {
-    if (!input.trim() || loading) return;
-    const query = input.trim();
-    setInput("");
+  useEffect(() => () => clearTimeout(retryTimer.current), []);
+
+  const send = async (retryQuery = "", appendQuestion = true) => {
+    const query = retryQuery || input.trim();
+    if (!query || loading) return;
+    clearTimeout(retryTimer.current);
+    setWarmup(null);
+    if (!retryQuery) setInput("");
     setLoading(true);
-    setMessages((current) => [...current, { role: "user", content: query }]);
+    if (appendQuestion) setMessages((current) => [...current, { role: "user", content: query }]);
     try {
       const data = await ask({ query });
       setMessages((current) => [...current, { role: "assistant", content: data.answer, citations: data.citations || [], confidence: data.confidence }]);
     } catch (error) {
-      setMessages((current) => [...current, { role: "assistant", content: getApiErrorMessage(error), citations: [], confidence: 0 }]);
+      const message = getApiErrorMessage(error);
+      const normalized = message.toLowerCase();
+      const isWarmingUp = normalized.includes("unavailable") || normalized.includes("timeout") || normalized.includes("timed out") || normalized.includes("503");
+      if (isWarmingUp) {
+        setWarmup({ query });
+        retryTimer.current = setTimeout(() => send(query, false), 20000);
+      } else {
+        setMessages((current) => [...current, { role: "assistant", content: message, citations: [], confidence: 0 }]);
+      }
     } finally {
       setLoading(false);
     }
@@ -59,12 +73,13 @@ export default function ExpertCopilot() {
             </article>;
           })}
           {loading && <div className="flex max-w-[90%] items-start gap-3" role="status" aria-live="polite"><span className="sr-only">Retrieving from the knowledge base...</span><div className="skeleton h-8 w-8 shrink-0 rounded-full" /><div className="flex-1 space-y-2"><div className="skeleton h-3 w-32" /><div className="skeleton h-20 w-full rounded-xl" /></div></div>}
+          {warmup && !loading && <div className="flex items-center gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3" role="status" aria-live="polite"><div className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-warning border-t-transparent" /><div className="min-w-0 flex-1"><p className="text-sm font-medium text-warning">Models warming up</p><p className="mt-0.5 text-xs text-text-secondary">First request takes 60–90 seconds. Retrying automatically in 20 seconds...</p></div><button type="button" onClick={() => send(warmup.query, false)} className="shrink-0 rounded-lg border border-warning/30 px-3 py-1.5 text-xs font-semibold text-warning transition-colors hover:bg-warning/10">Retry now</button></div>}
         </div>
         <div className="border-t border-border/70 bg-card/50 p-4">
           <div className="flex gap-2">
             <label className="sr-only" htmlFor="copilot-input">Ask an operational question</label>
             <input id="copilot-input" className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-4 py-3 text-sm text-text-primary outline-none transition-colors placeholder:text-muted focus:border-primary focus:ring-1 focus:ring-primary" value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => event.key === "Enter" && send()} placeholder="Ask an evidence-grounded operational question..." />
-            <button onClick={send} disabled={loading || !input.trim()} className="flex min-w-12 items-center justify-center rounded-lg bg-primary px-4 text-white transition-colors hover:bg-primary/90 disabled:opacity-40" aria-label="Send question">{loading ? <span className="skeleton h-4 w-4 rounded-full" /> : <Send size={18} />}</button>
+            <button onClick={() => send()} disabled={loading || !input.trim()} className="flex min-w-12 items-center justify-center rounded-lg bg-primary px-4 text-white transition-colors hover:bg-primary/90 disabled:opacity-40" aria-label="Send question">{loading ? <span className="skeleton h-4 w-4 rounded-full" /> : <Send size={18} />}</button>
           </div>
           <p className="mt-2 font-mono text-xs text-muted">Retrieves from indexed documents only. All answers include source citations.{noDocuments && <span className="ml-2 text-warning">No documents indexed — upload files in Document Library</span>}</p>
         </div>

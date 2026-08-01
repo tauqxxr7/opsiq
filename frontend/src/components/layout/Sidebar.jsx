@@ -1,4 +1,4 @@
-import { Bot, Boxes, LayoutDashboard, Library, Network, ShieldCheck, Wrench, X } from "lucide-react";
+import { Activity, BarChart3, Bot, Boxes, LayoutDashboard, Library, Network, ShieldCheck, Wrench, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const links = [
@@ -6,8 +6,10 @@ const links = [
   ["/copilot", Bot, "Copilot"],
   ["/maintenance", Wrench, "Maintenance"],
   ["/compliance", ShieldCheck, "Compliance"],
+  ["/sensors", Activity, "Sensor monitor"],
   ["/patterns", Network, "Failure patterns"],
   ["/documents", Library, "Document library"],
+  ["/analytics", BarChart3, "Analytics"],
   ["/architecture", Boxes, "Architecture"],
 ];
 

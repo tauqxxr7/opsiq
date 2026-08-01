@@ -39,3 +39,9 @@ export const compliance = (id) => client.get(endpoint(`compliance/audit/${id}`))
 export const patterns = () => client.get(endpoint("patterns")).then((response) => response.data);
 
 export default client;
+export const fleetStatus = () => client.get(endpoint("sensors/fleet/status")).then((response) => response.data);
+export const activeAlarms = () => client.get(endpoint("sensors/alarms/active")).then((response) => response.data);
+export const sensorTrend = (id, hours = 6) => client.get(endpoint(`sensors/trend/${id}`), { params: { hours } }).then((response) => response.data);
+export const reliabilityMetrics = () => client.get(endpoint("analytics/reliability")).then((response) => response.data);
+export const downtimeTrends = () => client.get(endpoint("analytics/downtime/trends")).then((response) => response.data);
+export const generateWorkOrder = (id) => client.post(endpoint(`maintenance/workorder/generate/${id}`)).then((response) => response.data);

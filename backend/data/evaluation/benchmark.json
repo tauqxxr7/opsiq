@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "description": "OPSIQ retrieval quality benchmark",
+  "created": "2026-07-26",
+  "queries": [
+    {
+      "id": "Q001",
+      "query": "What are the safety requirements for confined space entry?",
+      "expected_doc_type": "Safety Standard",
+      "expected_keywords": ["confined space", "atmospheric testing", "permit"],
+      "category": "safety_procedure"
+    },
+    {
+      "id": "Q002",
+      "query": "What caused the P-201 mechanical seal failure?",
+      "expected_doc_type": "Maintenance Record",
+      "expected_keywords": ["mechanical seal", "P-201", "bearing"],
+      "category": "maintenance_history"
+    },
+    {
+      "id": "Q003",
+      "query": "What are the OISD-118 requirements for gas detection?",
+      "expected_doc_type": "Safety Standard",
+      "expected_keywords": ["gas detection", "OISD", "calibration"],
+      "category": "compliance"
+    },
+    {
+      "id": "Q004",
+      "query": "Which equipment has the most recurring failures?",
+      "expected_doc_type": "Maintenance Record",
+      "expected_keywords": ["recurring", "failure", "work order"],
+      "category": "pattern_analysis"
+    },
+    {
+      "id": "Q005",
+      "query": "What is the procedure for hot work permits?",
+      "expected_doc_type": "Safety Standard",
+      "expected_keywords": ["hot work", "permit", "authorization"],
+      "category": "safety_procedure"
+    }
+  ],
+  "metrics_definition": {
+    "retrieval_confidence": "Mean confidence score across queries",
+    "citation_rate": "Percentage of answers with source citations",
+    "response_time_ms": "Average response time in milliseconds"
+  }
+}

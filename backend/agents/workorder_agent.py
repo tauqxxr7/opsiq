@@ -30,9 +30,11 @@ class WorkOrderAgent:
         if self.model:
             prompt = f'''Draft a maintenance work order as JSON with keys recommended_actions, required_skills, required_parts, safety_precautions, estimated_duration_hours, inspection_steps. Use only this evidence:\nEquipment: {equipment_id}\nRisk: {score}/100\nFailure mode: {risk_analysis.get("dominant_failure_mode")}\nRoot cause: {risk_analysis.get("dominant_root_cause")}\nSimilar incidents:\n{context}\nReturn JSON only.'''
             try:
-                content = json.loads(self.model.generate_content(prompt).text.strip().replace("```json", "").replace("```", ""))
+                generated = json.loads(self.model.generate_content(prompt).text.strip().replace("```json", "").replace("```", ""))
+                content = {key: generated.get(key, value) for key, value in FALLBACK.items()}
             except Exception:
                 content = FALLBACK
         now = datetime.now(timezone.utc)
         due_hours = 24 if priority == "CRITICAL" else 72 if priority == "HIGH" else 168
         return {"work_order_id": f'WO-DRAFT-{now:%Y%m%d}-{str(uuid.uuid4())[:6].upper()}', "status": "DRAFT", "equipment_id": equipment_id, "priority": priority, "risk_score": score, "failure_mode": risk_analysis.get("dominant_failure_mode", "Unknown"), "root_cause_assessment": risk_analysis.get("dominant_root_cause", "Under investigation"), "created_at": now.isoformat(), "due_by": (now + timedelta(hours=due_hours)).isoformat(), "requires_approval": priority in {"CRITICAL", "HIGH"}, **content, "evidence_note": "Draft derived from synthetic historical evidence; engineer approval is required before execution."}
+

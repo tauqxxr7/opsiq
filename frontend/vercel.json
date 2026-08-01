@@ -5,8 +5,10 @@
     { "source": "/copilot", "destination": "/index.html" },
     { "source": "/maintenance", "destination": "/index.html" },
     { "source": "/compliance", "destination": "/index.html" },
+    { "source": "/sensors", "destination": "/index.html" },
     { "source": "/patterns", "destination": "/index.html" },
     { "source": "/documents", "destination": "/index.html" },
+    { "source": "/analytics", "destination": "/index.html" },
     { "source": "/architecture", "destination": "/index.html" }
   ]
 }

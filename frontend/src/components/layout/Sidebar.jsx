@@ -25,7 +25,7 @@ export default function Sidebar({ open, setOpen }) {
           </div>
           <button className="rounded-md p-2 text-sidebar-muted lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X size={19} /></button>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-6">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-6">
           {links.map(([to, Icon, label]) => (
             <NavLink key={to} to={to} onClick={() => setOpen(false)} className={({ isActive }) => `group flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-all duration-150 ${isActive ? "nav-active border-primary/20 bg-primary/10 font-medium text-primary shadow-[0_0_12px_rgba(59,130,246,0.15)]" : "border-transparent text-text-secondary hover:bg-card hover:text-text-primary"}`}>
               <span className="flex h-5 w-5 items-center justify-center opacity-70 transition-opacity group-hover:opacity-100"><Icon size={17} aria-hidden="true" /></span><span>{label}</span>
@@ -40,3 +40,4 @@ export default function Sidebar({ open, setOpen }) {
     </>
   );
 }
+

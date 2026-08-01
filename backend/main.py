@@ -6,7 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import audit, benchmark, compliance, documents, maintenance, patterns, query
+from api import analytics, audit, benchmark, compliance, documents, maintenance, patterns, query, sensors
 from core.config import CORS_ORIGINS
 from core.orchestrator import build_graph
 from keepalive import ping_self
@@ -83,6 +83,8 @@ app.include_router(compliance.router, prefix="/api/compliance", tags=["Complianc
 app.include_router(patterns.router, prefix="/api/patterns", tags=["Patterns"])
 app.include_router(benchmark.router, prefix="/api/benchmark", tags=["Benchmark"])
 app.include_router(audit.router, prefix="/api/audit", tags=["Audit"])
+app.include_router(sensors.router, prefix="/api/sensors", tags=["Sensors"])
+app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 
 
 @app.get("/health")
@@ -102,3 +104,7 @@ async def readiness():
             media_type="application/json",
         )
     return {"status": "ready", "models_ready": True}
+
+
+
+

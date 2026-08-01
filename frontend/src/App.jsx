@@ -11,6 +11,8 @@ const ComplianceAudit = lazy(() => import("./pages/ComplianceAudit"));
 const FailurePatterns = lazy(() => import("./pages/FailurePatterns"));
 const DocumentLibrary = lazy(() => import("./pages/DocumentLibrary"));
 const ArchitecturePage = lazy(() => import("./pages/ArchitecturePage"));
+const SensorDashboard = lazy(() => import("./pages/SensorDashboard"));
+const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -24,8 +26,10 @@ export default function App() {
             <Route path="/copilot" element={<ExpertCopilot />} />
             <Route path="/maintenance" element={<MaintenanceIntel />} />
             <Route path="/compliance" element={<ComplianceAudit />} />
+            <Route path="/sensors" element={<SensorDashboard />} />
             <Route path="/patterns" element={<FailurePatterns />} />
             <Route path="/documents" element={<DocumentLibrary />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/architecture" element={<ArchitecturePage />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>

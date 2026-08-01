@@ -1,115 +1,79 @@
-# OPSIQ
-
-### Evidence-grounded industrial intelligence for maintenance, compliance, failure-pattern analysis, and engineering knowledge retrieval.
-
-OPSIQ combines grounded document retrieval with deterministic, traceable analytics over work orders, inspections, incidents, and uploaded technical documents.
+# OPSIQ 3.0
+### Enterprise Industrial AI Operations Intelligence Platform
 
 <p align="center">
-  <img src="https://img.shields.io/github/actions/workflow/status/tauqxxr7/opsiq/ci.yml?branch=main&style=flat-square&label=CI" alt="CI">
-  <img src="https://img.shields.io/badge/Python_3.11-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.11">
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 18">
-  <img src="https://img.shields.io/badge/Vite_5-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 5">
-  <img src="https://img.shields.io/badge/License-MIT-22C55E?style=flat-square" alt="MIT license">
-  <img src="https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel" alt="Vercel">
-  <img src="https://img.shields.io/badge/Backend-Railway-0B0D0E?style=flat-square&logo=railway" alt="Railway">
+  <img src="https://img.shields.io/badge/Python_3.11-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.11" />
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/LangGraph-FF6B35?style=flat-square" alt="LangGraph" />
+  <img src="https://img.shields.io/badge/ChromaDB-orange?style=flat-square" alt="ChromaDB" />
+  <img src="https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 18" />
+  <img src="https://img.shields.io/badge/Gemini_1.5_Flash-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini" />
+  <img src="https://img.shields.io/badge/Railway-0B0D0E?style=flat-square&logo=railway&logoColor=white" alt="Railway" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
 
-**[Live application](https://opsiq-one.vercel.app)** · **[API documentation](https://opsiq-production-b20c.up.railway.app/docs)** · **[Architecture](docs/architecture.md)** · **[Methodology](docs/METHODOLOGY.md)** · **[Data provenance](docs/data-provenance.md)**
+> ET AI Hackathon 2.0 � Phase 2 � Problem Statement #8  
+> 60,977 registered participants
 
-<!-- Add the verified public demo-video URL here after upload. -->
+**[Live Platform](https://opsiq-one.vercel.app)** � **[API Documentation](https://opsiq-production-b20c.up.railway.app/docs)** � **[Benchmark Results](#evaluation-results)**
 
-## Product tour
+## Platform Overview
 
-| Operational overview | Maintenance evidence | Compliance gaps |
-|---|---|---|
-| ![OPSIQ dashboard](docs/screenshots/dashboard-desktop.png) | ![P-201 recurrence-risk analysis](docs/screenshots/maintenance-desktop.png) | ![OISD-118 evidence-gap assessment](docs/screenshots/compliance-desktop.png) |
+OPSIQ 3.0 is an Industrial AI Operations Intelligence Platform for energy, manufacturing, oil and gas, and critical-infrastructure demonstrations. It combines hybrid RAG, multi-agent routing, simulated sensor intelligence, incident similarity, maintenance analytics, and draft work-order automation to turn fragmented records into traceable operational intelligence.
 
-See the [complete screenshot gallery](docs/screenshots/README.md).
+## Core Capabilities
 
-## The problem
+| Capability | Description |
+|---|---|
+| Expert Knowledge Copilot | BM25 + dense retrieval, cross-encoder reranking, citations and confidence gating |
+| Multilingual Support | Hindi, Marathi, Tamil, Telugu, Gujarati and Bengali query translation with responses in the selected language |
+| Maintenance Intelligence | Transparent six-component recurrence-risk scoring from work-order evidence |
+| Sensor Monitor | Simulated fleet telemetry, alarm thresholds and trend analysis |
+| Compliance Audit | OISD-118 synthetic evidence-gap assessment with a derived compliance percentage |
+| Failure Pattern Engine | NetworkX correlation across work orders and recovered incident records |
+| Incident Similarity | Jaccard text similarity plus equipment weighting |
+| Work Order Generation | Engineer-reviewable drafts from risk analysis and similar incidents |
+| Reliability Analytics | Evidence-derived MTBF, MTTR, availability estimates and downtime trends |
+| Retrieval Benchmark | Five-query evaluation with confidence, latency and keyword coverage |
+| Audit Trail | Privacy-preserving in-memory query-event log |
 
-Industrial evidence is often distributed across work orders, inspections, incident records, manuals, and standards. Finding and connecting it can require several tools and manual cross-referencing. OPSIQ demonstrates a single evidence layer for retrieval and reproducible specialist analysis.
+## Architecture
 
-## What OPSIQ does
-
-- **Expert Copilot:** grounded document retrieval with citations and explicit no-evidence behavior.
-- **Maintenance Intelligence:** deterministic recurrence-risk scoring from work-order history.
-- **Compliance Audit:** prototype evidence-gap assessment over synthetic OISD-118 inspection evidence.
-- **Failure Patterns:** cross-source investigation signals derived from work orders and incidents.
-- **Document Library:** validated PDF/DOCX ingestion, SHA-256 duplicate detection, chunking, indexing, and persistent inventory.
-- **Traceability:** evidence IDs, dataset hashes, methodology versions, analysis IDs, limitations, and component calculations.
-
-## How it works
-
-```text
-React / Vite
-    │ REST
-    ▼
-FastAPI ── LangGraph query router
-    ├── Expert Copilot ── dense + BM25 retrieval ── cross-encoder ── optional Gemini
-    ├── Maintenance Agent ── deterministic six-component score
-    ├── Compliance Agent ── record-derived OISD-118 gap matrix
-    └── Pattern Agent ── work orders + incidents ── NetworkX evidence graph
-           └── ChromaDB persistence + versioned methodology + SHA-256 identity
+```mermaid
+flowchart LR
+    U[User] --> R[React frontend]
+    R --> F[FastAPI backend]
+    F --> L[LangGraph orchestrator]
+    L --> C[Expert Copilot]
+    L --> M[Maintenance Intelligence]
+    L --> A[Compliance Audit]
+    L --> P[Failure Pattern Engine]
+    M --> W[Work Order Agent]
+    F --> S[Sensor Simulator]
+    F --> N[Reliability Analytics]
+    C --> D[(ChromaDB + BM25)]
+    P --> G[(NetworkX)]
+    C --> X[Gemini 1.5 Flash]
+    W --> X
 ```
 
-### Deterministic versus generative responsibilities
+FastAPI exposes the existing specialist routes plus sensor and reliability APIs. Four LangGraph specialists handle routed analysis; the work-order agent consumes deterministic maintenance output and similar-incident evidence. ChromaDB persists dense vectors, BM25 provides sparse ranking, NetworkX supports pattern relationships, and Gemini is optional for synthesis.
 
-| Responsibility | Approach |
-|---|---|
-| Maintenance score | Deterministic formula over work-order evidence |
-| Compliance status | Deterministic mapping over inspection records |
-| Failure patterns | Deterministic aggregation and graph construction |
-| Document retrieval | Dense and BM25 retrieval with reranking |
-| Natural-language synthesis | Optional Gemini generation from retrieved context |
-| Missing evidence | Explicit refusal or `status: no_data` |
+## Judging Criteria Alignment
 
-Gemini never creates specialist scores. If relevant chunks are absent, the Copilot returns a no-evidence response.
-
-## Evidence traceability
-
-Each specialist analysis identifies its input dataset, evidence records, methodology version, and deterministic analysis identity. Unknown equipment and standards return `status: no_data` rather than being presented as low risk or compliant.
-
-| Dataset | Records | Scope |
+| Criterion | Weight | OPSIQ 3.0 approach |
 |---|---:|---|
-| Work orders | 50 | Synthetic maintenance records across 15 equipment IDs |
-| Inspection reports | 6 | Synthetic OISD-118 evidence |
-| Incident history | 11 | Valid records recovered from a preserved corrupt artifact |
+| Innovation | 25% | Multilingual industrial RAG, explainable scoring and simulated telemetry in one platform |
+| Business Impact | 25% | Faster evidence retrieval, reliability metrics and reviewable work-order drafts |
+| Technical Excellence | 20% | Four-agent LangGraph, hybrid retrieval, reranking and evidence-gated synthesis |
+| Scalability | 15% | Dockerized Railway backend, configurable persistence and stateless polling APIs |
+| User Experience | 15% | Responsive multi-page UI with live refresh, explicit loading, error and no-data states |
 
-See [methodology](docs/METHODOLOGY.md) and [data provenance](docs/data-provenance.md).
+## Evaluation Results
 
-## Verified results
+Run `GET /api/benchmark/run` to produce results from the current runtime and indexed evidence. OPSIQ reports measured retrieval confidence, response time and keyword coverage; no fixed benchmark result is claimed in this README.
 
-Backend tests cover endpoints, analytics, ingestion, corruption handling, and traceability. An offline authenticity evaluation covers known and unknown queries. Frontend CI validates deployment configuration, linting, and production build. The public application and all seven routes have been smoke-tested against the deployed API.
-
-These checks are regression evidence for the prototype—not a claim of real-world model accuracy.
-
-## Technology stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | React 18, Vite 5, Tailwind CSS, Recharts |
-| Backend | FastAPI, Python 3.11, Uvicorn |
-| Orchestration | LangGraph |
-| Retrieval | ChromaDB, sentence-transformers, BM25Okapi, CrossEncoder |
-| Optional synthesis | Google Gemini |
-| Evidence graph | NetworkX |
-| Processing | PyMuPDF, python-docx |
-| Deployment | Vercel frontend, Railway backend |
-
-## Repository structure
-
-```text
-backend/        agents, API, evidence schemas, services, tests, evaluation
-frontend/       seven lazy-loaded routes and reusable UI components
-docs/           architecture, methodology, contracts, provenance, submission assets
-demo/           timed demonstration script
-```
-
-## Local setup
-
-Prerequisites: Python 3.11 and Node.js 20+.
+## Quick Start
 
 ```bash
 git clone https://github.com/tauqxxr7/opsiq.git
@@ -117,78 +81,30 @@ cd opsiq/backend
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
-pip install -r requirements-dev.txt
-cp ../.env.example .env
-python -m uvicorn main:app --reload --port 8000
-```
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
 
-In a second terminal:
-
-```bash
+# New terminal
 cd frontend
-npm ci
+npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`. First retrieval initialization may download embedding and reranker models.
+Set `GEMINI_API_KEY` in a local `.env` to enable synthesis and translation. See [DEPLOYMENT.md](DEPLOYMENT.md) for Railway and Vercel configuration.
 
-## Environment variables
+## Limitations
 
-| Variable | Required | Purpose |
-|---|---|---|
-| `GEMINI_API_KEY` | Copilot synthesis only | Server-side Gemini credential |
-| `CHROMA_DB_PATH` | No | ChromaDB and ingestion-manifest path |
-| `CORS_ORIGINS` | Production | Comma-separated frontend origins |
-| `MAX_UPLOAD_SIZE_MB` | No | Upload cap; defaults to 20 |
-| `VITE_API_URL` | Frontend production | Absolute backend API URL including `/api` |
+- All operational records are synthetic demonstration data.
+- Sensor readings are simulated and are not connected to SCADA, DCS or historians.
+- Maintenance output is historical recurrence analytics, not a trained failure-prediction model.
+- Availability is an illustrative estimate based on recorded downtime, not total observed operating time.
+- Compliance is a prototype evidence-gap assessment for synthetic OISD-118 records, not legal certification.
+- Translation and generative work-order enrichment require a Gemini API key; deterministic fallbacks remain available without one.
+- Generated work orders are drafts and require qualified engineer approval before execution.
 
-Never commit `.env` files or API keys.
+## Built By
 
-## API reference
-
-Use the [deployed OpenAPI UI](https://opsiq-production-b20c.up.railway.app/docs), repository [API reference](docs/api_reference.md), and [API contracts](docs/API_CONTRACTS.md).
-
-## Testing and CI
-
-```bash
-cd backend
-python -m pytest -q
-python -m compileall -q .
-python evaluation/run_evaluation.py
-
-cd ../frontend
-npm ci
-npm run lint
-npm run check:deployment
-npm run build
-```
-
-## Responsible-use limitations
-
-- All bundled operational records are synthetic demonstration data.
-- Compliance covers only bundled OISD-118 evidence and is not legal certification.
-- Maintenance scores summarize historical recurrence evidence and do not predict a component or failure date.
-- Pattern relationships are investigation signals and do not establish causality.
-- Retrieval quality depends on uploaded document quality and coverage.
-- The prototype has no authentication, tenancy, or plant-system integration.
-- Safety, maintenance, and compliance decisions require authorized human review.
-
-## What OPSIQ does not claim
-
-OPSIQ does not claim real-time sensor monitoring, exact failure prediction, legal certification, causal diagnosis, guaranteed hallucination prevention, enterprise security certification, or validated financial savings.
-
-## Future roadmap
-
-Controlled plant-data validation; authentication and tenant isolation; object storage and asynchronous ingestion; retrieval and load testing; human approval and audit workflows; enterprise connectors; and security hardening.
-
-## Documentation
-
-Start with the [documentation index](docs/README.md).
-
-## License
-
-Released under the [MIT License](LICENSE).
-
-## Author
-
-Built by [Tauqeer Bharde](https://github.com/tauqxxr7) for ET AI Hackathon 2.0, Problem Statement #8.
+**Tauqeer Sameer Bharde**  
+B.Tech � AI & Data Science  
+SIES Graduate School of Technology, Navi Mumbai  
+[github.com/tauqxxr7](https://github.com/tauqxxr7)

@@ -29,3 +29,12 @@ def test_incident_similarity_uses_real_schema():
     results = IncidentSimilarityEngine().find_similar("elevated vibration bearing", "P-201", 3)
     assert results
     assert {"incident_id", "failure_mode", "root_cause", "similarity_score"} <= results[0].keys()
+
+
+def test_work_order_draft_has_required_contract():
+    response = client.post("/api/maintenance/workorder/generate/P-201")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "DRAFT"
+    assert payload["requires_approval"] is True
+    assert payload["recommended_actions"] and payload["safety_precautions"]

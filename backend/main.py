@@ -6,7 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import benchmark, compliance, documents, maintenance, patterns, query
+from api import audit, benchmark, compliance, documents, maintenance, patterns, query
 from core.config import CORS_ORIGINS
 from core.orchestrator import build_graph
 from keepalive import ping_self
@@ -82,6 +82,7 @@ app.include_router(maintenance.router, prefix="/api/maintenance", tags=["Mainten
 app.include_router(compliance.router, prefix="/api/compliance", tags=["Compliance"])
 app.include_router(patterns.router, prefix="/api/patterns", tags=["Patterns"])
 app.include_router(benchmark.router, prefix="/api/benchmark", tags=["Benchmark"])
+app.include_router(audit.router, prefix="/api/audit", tags=["Audit"])
 
 
 @app.get("/health")

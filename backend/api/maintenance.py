@@ -29,3 +29,20 @@ async def equipment(equipment_id: str, request: Request):
         response_time_ms=round((time.perf_counter() - started) * 1000),
     )
     return response
+
+@router.post("/incidents/similar")
+async def find_similar_incidents(payload: dict):
+    from services.incident_similarity import IncidentSimilarityEngine
+    results = IncidentSimilarityEngine().find_similar(payload.get("description", ""), payload.get("equipment_id"), payload.get("top_k", 3))
+    return {"query": payload.get("description", ""), "equipment_id": payload.get("equipment_id"), "similar_incidents": results, "count": len(results)}
+
+
+@router.post("/workorder/generate/{equipment_id}")
+async def generate_work_order(equipment_id: str):
+    from agents.workorder_agent import WorkOrderAgent
+    from services.incident_similarity import IncidentSimilarityEngine
+    analysis = MaintenanceAgent().analyze(equipment_id)
+    if analysis["status"] == "no_data":
+        return analysis
+    similar = IncidentSimilarityEngine().find_similar(analysis["dominant_failure_mode"], equipment_id, 2)
+    return WorkOrderAgent().generate_work_order(equipment_id.upper(), analysis, similar)

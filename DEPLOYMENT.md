@@ -19,7 +19,7 @@
 5. Deploy and use `/health` as the health check.
 
 `CORS_ORIGINS` remains the exact comma-separated allowlist. `CORS_ORIGIN_REGEX` is optional and is matched against the complete origin. The OPSIQ expression above permits only the production domain and deployment or Git-branch aliases generated for the `opsiq` project in Tauqeer's Vercel team. It does not permit unrelated `vercel.app` projects, arbitrary Vercel subdomains or wildcard origins. For local development, leave the `.env.example` localhost origins in `CORS_ORIGINS`; production must replace them rather than append them.
-The bootstrap administrator is created only if the configured username does not exist. Remove the bootstrap password from the Railway environment after the first successful initialization. SQLite is suitable for the single-instance demonstration; PostgreSQL and refresh-token revocation are required before multi-instance enterprise use.
+The bootstrap administrator is created only if the configured username does not exist. Remove the bootstrap password from the Railway environment after the first successful initialization. SQLite, including the refresh-session ledger, is suitable for the single-instance demonstration. PostgreSQL is required before multi-instance enterprise use.
 
 ## Frontend — Vercel
 

@@ -108,4 +108,4 @@ API base URL validation, bounded Axios timeout and error classification remain i
 
 No functioning `main` feature was intentionally removed. Architecture was moved, while `/sensors` and `/analytics` were renamed with redirects.
 
-Incident, work-order, approval and user persistence now use a single-instance SQLite operational store. JWT access/refresh tokens and RBAC are implemented behind environment flags. Remaining limitations are no tenancy, no refresh-token revocation, no password reset/rotation workflow, no PostgreSQL scale-out, no benchmark-history persistence and no complete real-plant incident corpus.
+Incident, work-order, approval and user persistence now use a single-instance SQLite operational store. JWT access/refresh tokens and RBAC are implemented behind environment flags. Remaining limitations are no tenancy, no password reset/rotation workflow, no PostgreSQL scale-out, no benchmark-history persistence and no complete real-plant incident corpus.

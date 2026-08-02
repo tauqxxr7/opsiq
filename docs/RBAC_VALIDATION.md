@@ -41,11 +41,14 @@ The canonical permission test additionally verifies all eight roles across gener
 | Valid login | `200` with access and refresh tokens |
 | Invalid password | `401` |
 | Missing token | `401` |
-| Valid refresh | `200` |
+| Valid refresh | `200`; presented session rotated |
+| Refresh-token replay | `401` after rotation or logout |
+| Repeated logout | `200`; revocation remains idempotent |
+| Disabled user or changed role | `401`; all refresh sessions revoked |
 | Expired access token | `401` |
 | Unauthorized authenticated role | `403` |
 | SQLite process restart | Incident, approved linked work order and created user persist |
 
-Logout still clears session tokens client-side; refresh-token revocation remains a documented future hardening item and is not an RBAC alignment mismatch.
+Logout now revokes the presented refresh session before clearing browser state. Administrators can revoke all sessions for a user; disabling an account or changing its role performs the same server-side revocation.
 
 See `docs/PERMISSION_MODEL.md` for the complete route and endpoint model.

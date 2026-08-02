@@ -18,12 +18,12 @@ Role abbreviations: **OP** Operator, **ME** Maintenance Engineer, **RE** Reliabi
 | `/documents` | `GET /api/documents`, `/stats`; `POST /upload` | All | Upload: ME, RE, SE, SV, PM, AD | - | - | - | - |
 | `/benchmarks` | `GET /api/benchmark/run` | RE, AD, AU | - | - | - | - | - |
 | `/audit` | `GET /api/audit/recent` | SV, PM, AD, AU | - | - | - | - | - |
-| `/settings` | `GET/POST /api/auth/users`; `GET /api/auth/roles` | AD for users; All for role identity | User: AD | - | - | - | AD |
+| `/settings` | `/api/auth/users*`; `GET /api/auth/roles` | AD for users; All for role identity | User: AD | User role/active: AD | - | - | Session revocation: AD |
 | `/architecture` | None | All | - | - | - | - | - |
 
 ## Enforcement behavior
 
-- Login and token refresh are the only public `/api/auth` operations.
+- Login, token refresh and refresh-token logout are public transport endpoints; refresh and logout still require a valid signed refresh token.
 - Every other `/api` operation carries an explicit canonical permission dependency.
 - Sidebar and command-palette entries are filtered by the signed-in role.
 - Direct navigation remains protected and renders a dedicated 403 workspace.

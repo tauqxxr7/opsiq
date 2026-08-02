@@ -21,7 +21,7 @@ QA was completed locally at 1440 x 900 and 390 x 844 against FastAPI. Screenshot
 
 ## Final release-candidate preview
 
-- Preview: `https://opsiq-2qgoihc9a-tauqeers-projects-b2ec7057.vercel.app`
+- Preview: `https://opsiq-git-feat-enterprise-fro-b349fa-tauqeers-projects-b2ec7057.vercel.app`
 - Commit: `cb32508907b99e221b2a67943827a791707a9888`
 - Vercel deployment: Ready and all 14 direct SPA routes render.
 - Route overflow: none observed during the final route sweep.

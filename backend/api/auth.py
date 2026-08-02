@@ -61,4 +61,3 @@ async def create_user(payload: UserCreate, request: Request, _: dict = Depends(r
     if request.app.state.store.get_user(payload.username):
         raise HTTPException(status_code=409, detail="Username already exists")
     return request.app.state.store.create_user(payload.model_dump())
-

@@ -113,5 +113,3 @@ def require_roles(*roles: Role):
             raise HTTPException(status_code=403, detail="Insufficient role permission")
         return user
     return dependency
-
-

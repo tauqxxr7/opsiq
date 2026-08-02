@@ -83,5 +83,3 @@ async def complete_work_order(work_order_id: str, payload: CompletionRequest, re
     record=request.app.state.store.get_record("work_orders", work_order_id)
     if not record: raise HTTPException(status_code=404, detail="Work order not found")
     return request.app.state.store.update_record("work_orders", work_order_id, {"status":"COMPLETED", "completed_at":datetime.now(timezone.utc).isoformat(), "completion_notes":payload.completion_notes})
-
-

@@ -69,5 +69,3 @@ async def update_incident(incident_id: str, payload: IncidentUpdate, request: Re
     record = request.app.state.store.update_record("incidents", incident_id, payload.model_dump(exclude_unset=True, mode="json"))
     if not record: raise HTTPException(status_code=404, detail="Incident not found")
     return record
-
-

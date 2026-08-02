@@ -1,4 +1,4 @@
-# OPSIQ Ã¢â‚¬â€ Phase 2 Submission
+# OPSIQ — Phase 2 Submission
 
 ## 1. Executive summary
 
@@ -29,12 +29,12 @@ Reliability engineers, maintenance planners, field technicians, safety and compl
 ## 6. System architecture
 
 ```text
-React/Vite Ã¢â€ â€™ FastAPI Ã¢â€ â€™ LangGraph router
-  Ã¢â€Å“Ã¢â€â‚¬ Copilot Ã¢â€ â€™ dense + BM25 Ã¢â€ â€™ cross-encoder Ã¢â€ â€™ optional Gemini
-  Ã¢â€Å“Ã¢â€â‚¬ Maintenance Ã¢â€ â€™ deterministic six-component score
-  Ã¢â€Å“Ã¢â€â‚¬ Compliance Ã¢â€ â€™ inspection evidence matrix
-  Ã¢â€â€Ã¢â€â‚¬ Patterns Ã¢â€ â€™ NetworkX evidence graph
-                 Ã¢â€ â€œ
+React/Vite → FastAPI → LangGraph router
+  ├─ Copilot → dense + BM25 → cross-encoder → optional Gemini
+  ├─ Maintenance → deterministic six-component score
+  ├─ Compliance → inspection evidence matrix
+  └─ Patterns → NetworkX evidence graph
+                 ↓
        ChromaDB + persistent ingestion registry
 ```
 

@@ -12,10 +12,10 @@
   <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
 
-> ET AI Hackathon 2.0 Ã‚Â· Phase 2 Ã‚Â· Problem Statement #8
+> ET AI Hackathon 2.0 � Phase 2 � Problem Statement #8
 > 60,977 registered participants
 
-**[Live Platform](https://opsiq-one.vercel.app)** Ã‚Â· **[API Documentation](https://opsiq-production-b20c.up.railway.app/docs)** Ã‚Â· **[Benchmark Results](#evaluation-results)**
+**[Live Platform](https://opsiq-one.vercel.app)** � **[API Documentation](https://opsiq-production-b20c.up.railway.app/docs)** � **[Benchmark Results](#evaluation-results)**
 
 ## Platform Overview
 
@@ -107,6 +107,6 @@ Set `GEMINI_API_KEY` in a local `.env` to enable synthesis and translation. See 
 ## Built By
 
 **Tauqeer Sameer Bharde**
-B.Tech Ã¢â‚¬â€ AI & Data Science
+B.Tech � AI & Data Science
 SIES Graduate School of Technology, Navi Mumbai
 [github.com/tauqxxr7](https://github.com/tauqxxr7)

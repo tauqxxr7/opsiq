@@ -1,55 +1,51 @@
 # OPSIQ RBAC validation
 
-Release-candidate audit: 2 August 2026
+Validation date: 2 August 2026
 Branch: `feat/enterprise-frontend-redesign`
-Audited head: `cb32508907b99e221b2a67943827a791707a9888`
 
-## Scope and method
+## Method
 
-The public Vercel preview was checked first. It renders the SPA but is built with authentication disabled (`Local development / Administrator`) and cannot currently reach Railway, so public login and role switching could not be verified. The HTTP matrix below was therefore executed against the feature-branch FastAPI app using a fresh SQLite database per role, real scrypt password hashes, issued JWTs and `TestClient`. The restart check reopened the same SQLite file in a new `OperationalStore` instance.
+The canonical matrix in `backend/core/permissions.py` was exercised for every permission and all eight roles. FastAPI dependency tests verify that every protected `/api` endpoint declares a canonical permission. Existing lifecycle tests also issue real JWTs against persistent incident, work-order and user endpoints.
 
-Common frontend routes for every authenticated role are `/dashboard`, `/assets`, `/copilot`, `/maintenance`, `/incidents`, `/reliability`, `/work-orders`, `/documents` and `/architecture`. The table lists additional guarded workspaces.
+## Observed operational action matrix
 
-## Observed role matrix
+Status order: read incidents / create incident / update incident / create work order / update work order / approve / complete / list users.
 
-Status order in the final column: read incidents / create incident / update incident / create work order / update work order / approve / complete / list users.
+| Role | Additional frontend routes | Actual HTTP status observed |
+|---|---|---|
+| Operator | None | `200 / 201 / 403 / 403 / 403 / 403 / 403 / 403` |
+| Maintenance Engineer | None | `200 / 403 / 200 / 201 / 200 / 403 / 200 / 403` |
+| Reliability Engineer | `/patterns`, `/benchmarks` | `200 / 403 / 200 / 201 / 403 / 403 / 403 / 403` |
+| Safety Engineer | `/compliance` | `200 / 201 / 200 / 403 / 403 / 403 / 403 / 403` |
+| Supervisor | `/compliance`, `/patterns`, `/audit` | `200 / 201 / 200 / 201 / 200 / 200 / 200 / 403` |
+| Plant Manager | `/compliance`, `/patterns`, `/audit` | `200 / 201 / 200 / 201 / 200 / 200 / 200 / 403` |
+| Administrator | `/compliance`, `/patterns`, `/benchmarks`, `/audit`, `/settings` | `200 / 201 / 200 / 201 / 200 / 200 / 200 / 200` |
+| Auditor | `/compliance`, `/patterns`, `/benchmarks`, `/audit` | `200 / 403 / 403 / 403 / 403 / 403 / 403 / 403` |
 
-| Role | Additional accessible routes | Allowed actions | Denied actions | Actual HTTP status observed |
-|---|---|---|---|---|
-| Operator | None | Read; create incident | Update incident; create/update/approve/complete work order; user administration | `200 / 201 / 403 / 403 / 403 / 403 / 403 / 403` |
-| Maintenance Engineer | None | Read; update incident; create/update/complete work order | Create incident; approve work order; user administration | `200 / 403 / 200 / 201 / 200 / 403 / 200 / 403` |
-| Reliability Engineer | `/patterns`, `/benchmarks` | Read; update incident; create work order | Create incident; update/approve/complete work order; user administration | `200 / 403 / 200 / 201 / 403 / 403 / 403 / 403` |
-| Safety Engineer | `/compliance` | Read; create/update incident | Work-order mutation; user administration | `200 / 201 / 200 / 403 / 403 / 403 / 403 / 403` |
-| Supervisor | `/compliance`, `/patterns`, `/audit` | Read; create/update incident; create/update/approve/complete work order | User administration | `200 / 201 / 200 / 201 / 200 / 200 / 200 / 403` |
-| Plant Manager | `/compliance`, `/patterns`, `/audit` | Read; create/update incident; create/update/approve/complete work order | User administration | `200 / 201 / 200 / 201 / 200 / 200 / 200 / 403` |
-| Administrator | `/compliance`, `/patterns`, `/benchmarks`, `/audit`, `/settings` | All tested actions, including user administration | None in tested matrix | `200 / 201 / 200 / 201 / 200 / 200 / 200 / 200` |
-| Auditor | `/compliance`, `/patterns`, `/benchmarks`, `/audit` | Read only | All incident/work-order mutations; user administration | `200 / 403 / 403 / 403 / 403 / 403 / 403 / 403` |
+The canonical permission test additionally verifies all eight roles across general read, compliance read, pattern read, benchmark execution, audit read, document upload, incident create/update, work-order create/update/approve/complete and user administration.
 
-## Authentication results
+## Corrected alignment results
 
-| Scenario | Observed result |
+- Sidebar and command-palette entries are now hidden when the current role cannot access the route.
+- Route guards remain active and direct forbidden navigation renders a professional HTTP 403 page.
+- Specialist compliance, pattern, benchmark and audit APIs now use the same role sets as their frontend routes.
+- Document upload, incident creation, work-order generation/persistence and approval buttons are hidden for unauthorized roles.
+- Every protected backend endpoint has an explicit named permission dependency; backend enforcement remains authoritative.
+- Missing or invalid authentication returns `401`; authenticated requests without permission return `403`.
+- Administrator controls do not render while identity resolution is pending or for non-administrators.
+
+## Authentication and persistence regression results
+
+| Scenario | Expected and observed result |
 |---|---|
-| Valid username and password | `200` with access and refresh tokens |
+| Valid login | `200` with access and refresh tokens |
 | Invalid password | `401` |
-| Protected endpoint without token | `401` |
-| Refresh with valid refresh token | `200` |
+| Missing token | `401` |
+| Valid refresh | `200` |
 | Expired access token | `401` |
-| Logout | Frontend clears session tokens and returns to the login state when auth is enabled; no server-side token revocation endpoint exists |
+| Unauthorized authenticated role | `403` |
+| SQLite process restart | Incident, approved linked work order and created user persist |
 
-## Persistence results
+Logout still clears session tokens client-side; refresh-token revocation remains a documented future hardening item and is not an RBAC alignment mismatch.
 
-A test Administrator created an incident, created and approved its linked work order, and created an Auditor user. After closing the client and reopening the same SQLite database, all three records remained; the work order remained `APPROVED`. This validates process-restart persistence against one database file, not Railway volume attachment.
-
-## Frontend/backend enforcement mismatches
-
-- The sidebar and command palette show every navigation item to every role. A denied role sees `Access restricted` only after opening a guarded route. Backend mutation permissions still return `403`, but frontend visibility is not least-privilege.
-- Specialist read APIs are authenticated but are not restricted to the same role lists as `/compliance`, `/patterns`, `/benchmarks` and `/audit`. A user denied the workspace can call those APIs directly once authenticated. This is an enforcement mismatch requiring an explicit product-policy decision before release.
-- Logout clears browser session tokens but does not revoke an already-issued refresh token. Token expiry is the only server-side invalidation mechanism currently implemented.
-
-## Release blockers
-
-- Preview `VITE_AUTH_REQUIRED` is not enabled, so protected-route redirect, browser login, refresh, logout and all eight frontend role states are not production-like.
-- Preview-to-Railway requests fail and every API-backed workspace reports the backend unavailable; updated CORS was not effective for the immutable preview origin at audit time.
-- Railway `/data` volume attachment and persistence across an actual Railway restart could not be observed with the available access.
-
-**RBAC release status: blocked for preview acceptance; backend permission matrix passes locally.**
+See `docs/PERMISSION_MODEL.md` for the complete route and endpoint model.

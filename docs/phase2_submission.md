@@ -1,4 +1,4 @@
-# OPSIQ — Phase 2 Submission
+# OPSIQ Ã¢â‚¬â€ Phase 2 Submission
 
 ## 1. Executive summary
 
@@ -29,12 +29,12 @@ Reliability engineers, maintenance planners, field technicians, safety and compl
 ## 6. System architecture
 
 ```text
-React/Vite → FastAPI → LangGraph router
-  ├─ Copilot → dense + BM25 → cross-encoder → optional Gemini
-  ├─ Maintenance → deterministic six-component score
-  ├─ Compliance → inspection evidence matrix
-  └─ Patterns → NetworkX evidence graph
-                 ↓
+React/Vite Ã¢â€ â€™ FastAPI Ã¢â€ â€™ LangGraph router
+  Ã¢â€Å“Ã¢â€â‚¬ Copilot Ã¢â€ â€™ dense + BM25 Ã¢â€ â€™ cross-encoder Ã¢â€ â€™ optional Gemini
+  Ã¢â€Å“Ã¢â€â‚¬ Maintenance Ã¢â€ â€™ deterministic six-component score
+  Ã¢â€Å“Ã¢â€â‚¬ Compliance Ã¢â€ â€™ inspection evidence matrix
+  Ã¢â€â€Ã¢â€â‚¬ Patterns Ã¢â€ â€™ NetworkX evidence graph
+                 Ã¢â€ â€œ
        ChromaDB + persistent ingestion registry
 ```
 
@@ -76,7 +76,7 @@ Vercel hosts the React frontend. Railway builds the Python 3.11 FastAPI containe
 
 ## 16. Current limitations
 
-Synthetic evidence only; narrow OISD-118 scope; no authentication or tenancy; no plant-system connectors; small evaluation corpus; retrieval quality depends on document coverage; and safety decisions require human review.
+Synthetic evidence only; narrow OISD-118 scope; environment-gated single-tenant authentication; SQLite operational persistence; no plant-system connectors; small evaluation corpus; retrieval quality depends on document coverage; and safety decisions require human review.
 
 ## 17. Future roadmap
 

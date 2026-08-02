@@ -52,7 +52,7 @@ Through approved connectors or controlled exports, schema validation, identity m
 Separate ingestion workers, object storage, PostgreSQL metadata, tenant-scoped indexes, queues, idempotent jobs, managed vector infrastructure, and stateless API scaling.
 
 ## 18. What are the current limitations?
-Synthetic evidence, narrow compliance scope, no authentication or tenancy, small evaluation corpus, no live telemetry, and document-dependent retrieval quality.
+Synthetic evidence, narrow compliance scope, environment-gated single-tenant authentication, SQLite operational persistence, small evaluation corpus, no live telemetry, and document-dependent retrieval quality.
 
 ## 19. What security controls exist today?
 Secrets remain server-side, CORS is configurable, uploads are bounded and validated, duplicates are hashed, and containers exclude local secrets and runtime data.

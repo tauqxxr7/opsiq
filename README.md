@@ -12,10 +12,10 @@
   <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
 
-> ET AI Hackathon 2.0 � Phase 2 � Problem Statement #8  
+> ET AI Hackathon 2.0 Ã‚Â· Phase 2 Ã‚Â· Problem Statement #8
 > 60,977 registered participants
 
-**[Live Platform](https://opsiq-one.vercel.app)** � **[API Documentation](https://opsiq-production-b20c.up.railway.app/docs)** � **[Benchmark Results](#evaluation-results)**
+**[Live Platform](https://opsiq-one.vercel.app)** Ã‚Â· **[API Documentation](https://opsiq-production-b20c.up.railway.app/docs)** Ã‚Â· **[Benchmark Results](#evaluation-results)**
 
 ## Platform Overview
 
@@ -101,10 +101,12 @@ Set `GEMINI_API_KEY` in a local `.env` to enable synthesis and translation. See 
 - Compliance is a prototype evidence-gap assessment for synthetic OISD-118 records, not legal certification.
 - Translation and generative work-order enrichment require a Gemini API key; deterministic fallbacks remain available without one.
 - Generated work orders are drafts and require qualified engineer approval before execution.
+- Incident, work-order and user persistence uses SQLite for this single-instance demonstration; PostgreSQL, tenancy and refresh-token revocation remain enterprise roadmap items.
+- JWT/RBAC is environment-gated so the public synthetic demonstration can remain accessible; production access control requires both backend and frontend auth flags plus a strong secret.
 
 ## Built By
 
-**Tauqeer Sameer Bharde**  
-B.Tech � AI & Data Science  
-SIES Graduate School of Technology, Navi Mumbai  
+**Tauqeer Sameer Bharde**
+B.Tech Ã¢â‚¬â€ AI & Data Science
+SIES Graduate School of Technology, Navi Mumbai
 [github.com/tauqxxr7](https://github.com/tauqxxr7)

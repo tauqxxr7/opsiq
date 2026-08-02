@@ -4,10 +4,10 @@ All specialist endpoints return HTTP 200 for valid requests, including valid req
 
 ## Specialist endpoints
 
-- `GET /api/maintenance` — evidence-backed equipment catalog and aggregate high-risk count.
-- `GET /api/maintenance/{equipment_id}` — score, breakdown, recurrence metrics, evidence, limitations and reproducibility metadata.
-- `GET /api/compliance/audit/{standard}` — record-derived matrix, percentage, corrective actions and evidence. Bundled data supports only `OISD-118`.
-- `GET /api/patterns` — cross-source recurring patterns, root causes, downtime clusters, precursors and serialized evidence graph.
+- `GET /api/maintenance` â€” evidence-backed equipment catalog and aggregate high-risk count.
+- `GET /api/maintenance/{equipment_id}` â€” score, breakdown, recurrence metrics, evidence, limitations and reproducibility metadata.
+- `GET /api/compliance/audit/{standard}` â€” record-derived matrix, percentage, corrective actions and evidence. Bundled data supports only `OISD-118`.
+- `GET /api/patterns` â€” cross-source recurring patterns, root causes, downtime clusters, precursors and serialized evidence graph.
 
 A valid query without matching records returns:
 
@@ -17,9 +17,9 @@ A valid query without matching records returns:
 
 ## Document endpoints
 
-- `POST /api/documents/upload` — PDF/DOCX, maximum `MAX_UPLOAD_SIZE_MB` (20 by default).
-- `GET /api/documents` — persistent ingestion manifest with filename, SHA-256, type, pages, chunks, status and timestamp.
-- `GET /api/documents/stats` — vector chunk and manifest document counts.
+- `POST /api/documents/upload` â€” PDF/DOCX, maximum `MAX_UPLOAD_SIZE_MB` (20 by default).
+- `GET /api/documents` â€” persistent ingestion manifest with filename, SHA-256, type, pages, chunks, status and timestamp.
+- `GET /api/documents/stats` â€” vector chunk and manifest document counts.
 
 Upload status codes: `415` unsupported type, `413` too large, `422` empty/signature mismatch/corrupt/no extractable text, `409` duplicate SHA-256.
 

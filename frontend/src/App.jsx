@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import { routeRoles } from "./auth/permissions";
 import AppShell from "./components/layout/AppShell";
 import { PageTransition } from "./components/motion/MotionPrimitives";
 import LoadingState from "./components/ui/LoadingState";
@@ -9,7 +10,7 @@ const pages = {
   dashboard: lazy(() => import("./pages/Dashboard")), copilot: lazy(() => import("./pages/ExpertCopilot")), assets: lazy(() => import("./pages/SensorDashboard")), maintenance: lazy(() => import("./pages/MaintenanceIntel")), incidents: lazy(() => import("./pages/IncidentIntel")), reliability: lazy(() => import("./pages/AnalyticsPage")), compliance: lazy(() => import("./pages/ComplianceAudit")), workOrders: lazy(() => import("./pages/WorkOrders")), patterns: lazy(() => import("./pages/FailurePatterns")), documents: lazy(() => import("./pages/DocumentLibrary")), benchmarks: lazy(() => import("./pages/Benchmarks")), audit: lazy(() => import("./pages/AuditTrail")), settings: lazy(() => import("./pages/SettingsPage")), architecture: lazy(() => import("./pages/ArchitecturePage")), login: lazy(() => import("./pages/LoginPage")),
 };
 const routes = [
-  ["/dashboard", pages.dashboard], ["/copilot", pages.copilot], ["/assets", pages.assets], ["/maintenance", pages.maintenance], ["/incidents", pages.incidents], ["/reliability", pages.reliability], ["/compliance", pages.compliance, ["Safety Engineer", "Supervisor", "Plant Manager", "Administrator", "Auditor"]], ["/work-orders", pages.workOrders], ["/patterns", pages.patterns, ["Reliability Engineer", "Supervisor", "Plant Manager", "Administrator", "Auditor"]], ["/documents", pages.documents], ["/benchmarks", pages.benchmarks, ["Reliability Engineer", "Administrator", "Auditor"]], ["/audit", pages.audit, ["Supervisor", "Plant Manager", "Administrator", "Auditor"]], ["/settings", pages.settings, ["Administrator"]], ["/architecture", pages.architecture],
+  ["/dashboard", pages.dashboard], ["/copilot", pages.copilot], ["/assets", pages.assets], ["/maintenance", pages.maintenance], ["/incidents", pages.incidents], ["/reliability", pages.reliability], ["/compliance", pages.compliance, routeRoles["/compliance"]], ["/work-orders", pages.workOrders], ["/patterns", pages.patterns, routeRoles["/patterns"]], ["/documents", pages.documents], ["/benchmarks", pages.benchmarks, routeRoles["/benchmarks"]], ["/audit", pages.audit, routeRoles["/audit"]], ["/settings", pages.settings, routeRoles["/settings"]], ["/architecture", pages.architecture],
 ];
 
 function Workspace() {

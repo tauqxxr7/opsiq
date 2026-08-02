@@ -23,16 +23,13 @@ def permission_of(route):
 
 
 def protected_routes():
-    for included in app.routes:
-        if not hasattr(included, "original_router"):
-            continue
-        prefix = included.include_context.prefix
-        for route in included.original_router.routes:
-            yield prefix + route.path, route
+    for route in app.routes:
+        if getattr(route, "path", "").startswith("/api/"):
+            yield route.path, route
 
 
 def test_every_protected_api_route_declares_a_canonical_permission():
-    public = {("/api/auth/login", "POST"), ("/api/auth/refresh", "POST")}
+    public = {("/api/auth/login", "POST"), ("/api/auth/refresh", "POST"), ("/api/auth/logout", "POST")}
     routes = list(protected_routes())
     for path, route in routes:
         for method in route.methods - {"HEAD", "OPTIONS"}:

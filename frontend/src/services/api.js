@@ -73,6 +73,7 @@ export const similarIncidents = (payload) => client.post(endpoint("maintenance/i
 export const runBenchmark = () => client.get(endpoint("benchmark/run")).then((response) => response.data);
 export const recentAudit = () => client.get(endpoint("audit/recent")).then((response) => response.data);
 export const login = (payload) => client.post(endpoint("auth/login"), payload).then((response) => response.data);
+export const logout = (refreshToken) => client.post(endpoint("auth/logout"), { refresh_token: refreshToken }, { timeout: 15000 }).then((response) => response.data);
 export const authMe = () => client.get(endpoint("auth/me")).then((response) => response.data);
 export const authRoles = () => client.get(endpoint("auth/roles")).then((response) => response.data);
 export const authUsers = () => client.get(endpoint("auth/users")).then((response) => response.data);

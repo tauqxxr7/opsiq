@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import sqlite3
@@ -33,6 +34,12 @@ class OperationalStore:
               username TEXT PRIMARY KEY, display_name TEXT NOT NULL, password_hash TEXT NOT NULL,
               role TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS refresh_sessions (
+              jti_hash TEXT PRIMARY KEY, username TEXT NOT NULL, expires_at INTEGER NOT NULL,
+              created_at TEXT NOT NULL, revoked_at TEXT,
+              FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS idx_refresh_sessions_user ON refresh_sessions(username, revoked_at, expires_at);
             CREATE TABLE IF NOT EXISTS incidents (
               incident_id TEXT PRIMARY KEY, asset_id TEXT NOT NULL, plant TEXT NOT NULL, unit TEXT NOT NULL,
               severity TEXT NOT NULL, status TEXT NOT NULL, reported_at TEXT NOT NULL, description TEXT NOT NULL,
@@ -96,6 +103,62 @@ class OperationalStore:
     def list_users(self):
         with self.connect() as db:
             return [self._row(row) for row in db.execute("SELECT * FROM users ORDER BY username")]
+
+    @staticmethod
+    def _session_hash(jti):
+        return hashlib.sha256(jti.encode()).hexdigest()
+
+    def create_refresh_session(self, username, jti, expires_at):
+        with self._lock, self.connect() as db:
+            db.execute("INSERT INTO refresh_sessions VALUES(?,?,?,?,NULL)", (self._session_hash(jti), username, expires_at, self.now()))
+
+    def rotate_refresh_session(self, username, presented_jti, new_jti, new_expires_at):
+        now = self.now()
+        with self._lock, self.connect() as db:
+            cursor = db.execute(
+                "UPDATE refresh_sessions SET revoked_at=? WHERE jti_hash=? AND username=? AND revoked_at IS NULL AND expires_at>?",
+                (now, self._session_hash(presented_jti), username, int(datetime.now(timezone.utc).timestamp())),
+            )
+            if cursor.rowcount != 1:
+                return False
+            db.execute("INSERT INTO refresh_sessions VALUES(?,?,?,?,NULL)", (self._session_hash(new_jti), username, new_expires_at, now))
+            return True
+
+    def revoke_refresh_session(self, username, jti):
+        with self._lock, self.connect() as db:
+            cursor = db.execute(
+                "UPDATE refresh_sessions SET revoked_at=COALESCE(revoked_at, ?) WHERE jti_hash=? AND username=?",
+                (self.now(), self._session_hash(jti), username),
+            )
+            return bool(cursor.rowcount)
+
+    def revoke_all_sessions(self, username, db=None):
+        owns = db is None
+        db = db or self.connect()
+        try:
+            cursor = db.execute("UPDATE refresh_sessions SET revoked_at=? WHERE username=? AND revoked_at IS NULL", (self.now(), username))
+            if owns:
+                db.commit()
+            return cursor.rowcount
+        finally:
+            if owns:
+                db.close()
+
+    def update_user(self, username, updates):
+        allowed = {key: updates[key] for key in ("role", "active") if key in updates and updates[key] is not None}
+        if not allowed:
+            return self.get_user(username)
+        with self._lock, self.connect() as db:
+            current = self.get_user(username, db)
+            if not current:
+                return None
+            values = [int(value) if key == "active" else value for key, value in allowed.items()]
+            db.execute(f"UPDATE users SET {','.join(f'{key}=?' for key in allowed)} WHERE username=?", (*values, username))
+            role_changed = "role" in allowed and allowed["role"] != current["role"]
+            disabled = allowed.get("active") is False and current["active"]
+            if role_changed or disabled:
+                self.revoke_all_sessions(username, db)
+        return self.get_user(username)
 
     def list_records(self, table, filters, limit, offset):
         json_fields = ("symptoms",) if table == "incidents" else ("required_parts", "required_skills", "approval_history")

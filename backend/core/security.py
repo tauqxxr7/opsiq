@@ -56,11 +56,11 @@ def _decode(value: str) -> bytes:
     return base64.urlsafe_b64decode(value + "=" * (-len(value) % 4))
 
 
-def create_token(subject: str, role: str, token_type: str, ttl: int) -> str:
+def create_token(subject: str, role: str, token_type: str, ttl: int, jti: str | None = None) -> str:
     if not JWT_SECRET:
         raise RuntimeError("OPSIQ_JWT_SECRET is required to issue tokens")
     now = int(time.time())
-    payload = {"sub": subject, "role": role, "type": token_type, "iat": now, "exp": now + ttl, "jti": secrets.token_urlsafe(12)}
+    payload = {"sub": subject, "role": role, "type": token_type, "iat": now, "exp": now + ttl, "jti": jti or secrets.token_urlsafe(12)}
     header = {"alg": "HS256", "typ": "JWT"}
     unsigned = f"{_b64(json.dumps(header, separators=(',', ':')).encode())}.{_b64(json.dumps(payload, separators=(',', ':')).encode())}"
     signature = _b64(hmac.new(JWT_SECRET.encode(), unsigned.encode(), hashlib.sha256).digest())
@@ -77,17 +77,23 @@ def decode_token(token: str, expected_type: str) -> dict:
         if not hmac.compare_digest(signature, expected):
             raise ValueError("signature")
         data = json.loads(_decode(payload))
-        if data.get("type") != expected_type or int(data.get("exp", 0)) <= int(time.time()):
+        if not data.get("sub") or not data.get("jti") or data.get("type") != expected_type or int(data.get("exp", 0)) <= int(time.time()):
             raise ValueError("expired or wrong token type")
         return data
     except (ValueError, TypeError, json.JSONDecodeError):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token") from None
 
 
-def issue_tokens(user: dict) -> dict:
+def issue_tokens(user: dict, store, refresh_jti: str | None = None, persist_refresh: bool = True) -> dict:
+    refresh_jti = refresh_jti or secrets.token_urlsafe(24)
+    refresh_expires_at = int(time.time()) + REFRESH_TTL_SECONDS
+    access_token = create_token(user["username"], user["role"], "access", ACCESS_TTL_SECONDS)
+    refresh_token = create_token(user["username"], user["role"], "refresh", REFRESH_TTL_SECONDS, refresh_jti)
+    if persist_refresh:
+        store.create_refresh_session(user["username"], refresh_jti, refresh_expires_at)
     return {
-        "access_token": create_token(user["username"], user["role"], "access", ACCESS_TTL_SECONDS),
-        "refresh_token": create_token(user["username"], user["role"], "refresh", REFRESH_TTL_SECONDS),
+        "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
         "expires_in": ACCESS_TTL_SECONDS,
         "user": {key: user[key] for key in ("username", "display_name", "role")},

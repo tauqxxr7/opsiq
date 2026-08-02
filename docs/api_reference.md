@@ -7,7 +7,7 @@ All specialist datasets are synthetic demonstrations.
 
 ## Health
 
-**GET `/health`** â€” liveness check.
+**GET `/health`** — liveness check.
 
 ```json
 {"status":"operational","service":"OPSIQ"}
@@ -17,7 +17,7 @@ Returns HTTP 200 while the service is available. It does not require Gemini cred
 
 ## Maintenance
 
-**GET `/api/maintenance/{equipment_id}`** â€” deterministic historical recurrence-risk analysis.
+**GET `/api/maintenance/{equipment_id}`** — deterministic historical recurrence-risk analysis.
 
 Example: `GET /api/maintenance/P-201`
 
@@ -27,7 +27,7 @@ Unknown equipment returns HTTP 200 with `status: "no_data"`, the requested ID, a
 
 ## Compliance
 
-**GET `/api/compliance/audit/{standard}`** â€” prototype evidence-gap assessment.
+**GET `/api/compliance/audit/{standard}`** — prototype evidence-gap assessment.
 
 Example: `GET /api/compliance/audit/OISD-118`
 
@@ -35,19 +35,19 @@ The response includes assessment status, supported controls, gaps, critical gaps
 
 ## Failure patterns
 
-**GET `/api/patterns`** â€” deterministic aggregation across synthetic work orders and recovered incident records.
+**GET `/api/patterns`** — deterministic aggregation across synthetic work orders and recovered incident records.
 
 The response includes recurring patterns, affected equipment, counts, dates, supporting evidence IDs, graph statistics, methodology identity, and limitations. Relationships are investigation signals and do not establish causality.
 
 ## Documents
 
-**POST `/api/documents/upload`** â€” upload one PDF or DOCX multipart `file`. Validates extension/signature, enforces the configured size limit, hashes content, extracts and chunks text, indexes chunks, and records the document. Duplicate content returns HTTP 409. Corrupt, unsupported, empty, or oversized uploads return structured 4xx errors.
+**POST `/api/documents/upload`** — upload one PDF or DOCX multipart `file`. Validates extension/signature, enforces the configured size limit, hashes content, extracts and chunks text, indexes chunks, and records the document. Duplicate content returns HTTP 409. Corrupt, unsupported, empty, or oversized uploads return structured 4xx errors.
 
-**GET `/api/documents/stats`** â€” returns backend document inventory and index statistics. An empty corpus is a valid state.
+**GET `/api/documents/stats`** — returns backend document inventory and index statistics. An empty corpus is a valid state.
 
 ## Copilot
 
-**POST `/api/query`** â€” route a natural-language query. Representative request:
+**POST `/api/query`** — route a natural-language query. Representative request:
 
 ```json
 {"query":"What evidence is available for confined-space entry requirements?","query_type":"knowledge"}

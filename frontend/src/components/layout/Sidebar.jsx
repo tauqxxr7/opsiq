@@ -1,43 +1,6 @@
-import { Activity, BarChart3, Bot, Boxes, LayoutDashboard, Library, Network, ShieldCheck, Wrench, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
-
-const links = [
-  ["/dashboard", LayoutDashboard, "Overview"],
-  ["/copilot", Bot, "Copilot"],
-  ["/maintenance", Wrench, "Maintenance"],
-  ["/compliance", ShieldCheck, "Compliance"],
-  ["/sensors", Activity, "Sensor monitor"],
-  ["/patterns", Network, "Failure patterns"],
-  ["/documents", Library, "Document library"],
-  ["/analytics", BarChart3, "Analytics"],
-  ["/architecture", Boxes, "Architecture"],
-];
-
-export default function Sidebar({ open, setOpen }) {
-  return (
-    <>
-      {open && <button className="fixed inset-0 z-30 bg-slate-950/70 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation overlay" />}
-      <aside className={`${open ? "translate-x-0" : "-translate-x-full"} fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border/70 bg-sidebar text-text-primary transition-transform lg:translate-x-0`} aria-label="Primary navigation">
-        <div className="flex h-20 items-center justify-between border-b border-border/70 px-5">
-          <div>
-            <p className="text-lg font-bold tracking-[0.16em]">OPSIQ</p>
-            <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-sidebar-muted">Industrial intelligence</p>
-          </div>
-          <button className="rounded-md p-2 text-sidebar-muted lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X size={19} /></button>
-        </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-6">
-          {links.map(([to, Icon, label]) => (
-            <NavLink key={to} to={to} onClick={() => setOpen(false)} className={({ isActive }) => `group flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-all duration-150 ${isActive ? "nav-active border-primary/20 bg-primary/10 font-medium text-primary shadow-[0_0_12px_rgba(59,130,246,0.15)]" : "border-transparent text-text-secondary hover:bg-card hover:text-text-primary"}`}>
-              <span className="flex h-5 w-5 items-center justify-center opacity-70 transition-opacity group-hover:opacity-100"><Icon size={17} aria-hidden="true" /></span><span>{label}</span>
-            </NavLink>
-          ))}
-        </nav>
-        <div className="border-t border-border/70 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-sidebar-muted">Evidence scope</p>
-          <p className="mt-1 text-xs leading-relaxed text-text-secondary">Synthetic industrial demonstration data</p>
-        </div>
-      </aside>
-    </>
-  );
+import { navigation } from "../../constants/navigation";
+export default function Sidebar({ open, setOpen, collapsed, setCollapsed }) {
+  return <>{open ? <button className="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation overlay" /> : null}<aside className={`${open ? "translate-x-0" : "-translate-x-full"} ${collapsed ? "lg:w-[76px]" : "lg:w-72"} fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-border/70 bg-sidebar transition-[width,transform] duration-200 lg:translate-x-0`} aria-label="Primary navigation"><div className="flex h-20 items-center gap-3 border-b border-border/70 px-5"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-primary/30 bg-primary/10 font-mono text-sm font-bold text-primary">OQ</span>{collapsed ? null : <div className="min-w-0"><p className="font-semibold tracking-[.14em]">OPSIQ</p><p className="truncate text-[10px] uppercase tracking-[.16em] text-muted">Operations intelligence</p></div>}<button className="ml-auto rounded-lg p-2 text-muted lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X size={18} /></button></div><nav className="scrollbar-thin flex-1 overflow-y-auto p-3">{navigation.map((group) => <section key={group.label} className="mb-5"><p className={`mb-2 px-3 text-[10px] font-semibold uppercase tracking-[.18em] text-muted ${collapsed ? "lg:sr-only" : ""}`}>{group.label}</p><div className="space-y-1">{group.items.map((item) => <NavLink key={item.to} to={item.to} title={collapsed ? item.label : undefined} onClick={() => setOpen(false)} className={({ isActive }) => `group relative flex h-10 items-center gap-3 rounded-lg border px-3 text-sm transition-colors ${isActive ? "border-primary/25 bg-primary/10 text-primary" : "border-transparent text-text-secondary hover:bg-card/70 hover:text-text-primary"}`}><item.icon className="shrink-0" size={17} aria-hidden="true" />{collapsed ? null : <span className="truncate">{item.label}</span>}</NavLink>)}</div></section>)}</nav><div className="border-t border-border/70 p-3"><div className={`rounded-lg border border-warning/20 bg-warning/5 p-3 ${collapsed ? "lg:px-2" : ""}`}><div className="flex items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full bg-warning" />{collapsed ? null : <span className="text-xs font-semibold text-warning">Demonstration environment</span>}</div>{collapsed ? null : <p className="mt-1.5 text-[11px] leading-4 text-muted">Synthetic records / simulated telemetry</p>}</div><button className="mt-2 hidden w-full items-center justify-center rounded-lg p-2 text-muted hover:bg-card lg:flex" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>{collapsed ? <ChevronRight size={17} /> : <><ChevronLeft size={17} /><span className="ml-2 text-xs">Collapse</span></>}</button></div></aside></>;
 }
-

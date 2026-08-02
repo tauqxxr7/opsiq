@@ -1,16 +1,8 @@
-import { Menu } from "lucide-react";
+import { Bell, Building2, Clock3, Command, LogOut, Menu, Search, UserRound } from "lucide-react";
+import { useAuth } from "../../auth/AuthContext";
+import BackendStatus from "../status/BackendStatus";
 
-export default function TopBar({ setOpen }) {
-  return (
-    <header className="sticky top-0 z-20 flex h-16 items-center border-b border-border bg-surface/95 px-4 backdrop-blur sm:px-6 lg:px-8">
-      <button className="rounded-md p-2 text-text-secondary lg:hidden" onClick={() => setOpen(true)} aria-label="Open navigation">
-        <Menu size={20} />
-      </button>
-      <div className="ml-3 lg:ml-0">
-        <p className="text-sm font-semibold text-text-primary">Operations intelligence workspace</p>
-        <p className="hidden text-xs text-muted sm:block">Evidence-derived analytics · synthetic demonstration data</p>
-      </div>
-      <span className="ml-auto rounded-md bg-card px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-text-secondary">Demo environment</span>
-    </header>
-  );
+export default function TopBar({ setOpen, openCommand }) {
+  const { user, logout, authRequired } = useAuth();
+  return <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border/70 bg-base/90 px-4 backdrop-blur-xl sm:px-6"><button className="rounded-lg p-2 text-text-secondary lg:hidden" onClick={() => setOpen(true)} aria-label="Open navigation"><Menu size={20} /></button><button onClick={openCommand} className="hidden min-w-0 items-center gap-2 rounded-lg border border-border bg-surface/80 px-3 py-2 text-xs text-muted hover:border-primary/40 sm:flex"><Search size={15} /><span className="hidden md:inline">Search operations</span><kbd className="ml-3 hidden rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] lg:inline"><Command size={10} className="inline" /> K</kbd></button><div className="hidden items-center gap-2 border-l border-border pl-4 text-xs text-text-secondary md:flex"><Building2 size={15} className="text-primary" /><span>Demo Plant</span><span className="text-muted">/ Unit 01</span></div><div className="ml-auto flex items-center gap-2"><span className="hidden items-center gap-1.5 text-xs text-muted xl:flex"><Clock3 size={13} />UTC telemetry</span><BackendStatus /><button className="icon-button" aria-label="Notifications"><Bell size={17} /></button><span className="hidden text-right text-[10px] leading-4 text-muted lg:block"><strong className="block text-text-secondary">{user?.display_name}</strong>{user?.role}</span><button className="icon-button" aria-label={authRequired ? "Sign out" : "Profile menu"} onClick={authRequired ? logout : undefined}>{authRequired ? <LogOut size={17} /> : <UserRound size={17} />}</button></div></header>;
 }

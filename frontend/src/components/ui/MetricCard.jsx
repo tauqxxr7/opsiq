@@ -1,12 +1,2 @@
-export default function MetricCard({ label, value, detail, icon: Icon, tone = "text-primary" }) {
-  return (
-    <article className="card-hover group rounded-xl border border-border bg-surface p-5 shadow-panel">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-muted">{label}</p>
-        {Icon && <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10"><Icon className={tone} size={16} aria-hidden="true" /></div>}
-      </div>
-      <p className={`metric-value mb-1 font-mono text-3xl font-bold tabular-nums ${tone}`}>{value}</p>
-      <p className="text-xs leading-relaxed text-text-secondary">{detail}</p>
-    </article>
-  );
-}
+import { AnimatedNumber } from "../motion/MotionPrimitives";
+export default function MetricCard({ label, value, detail, icon: Icon, tone = "text-primary" }) { const match = typeof value === "number"; return <article className="metric-card" title={detail}><div className="mb-4 flex items-center justify-between"><p className="section-label">{label}</p>{Icon ? <span className="metric-icon"><Icon className={tone} size={16} aria-hidden="true" /></span> : null}</div><p className={`font-mono text-2xl font-semibold tabular-nums ${tone}`}>{match ? <AnimatedNumber value={value} /> : value}</p><p className="mt-1 text-[11px] leading-4 text-muted">{detail}</p></article>; }

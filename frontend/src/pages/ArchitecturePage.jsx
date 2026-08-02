@@ -26,6 +26,6 @@ export default function ArchitecturePage() {
       </Panel>
       <Panel title={current[1]} description="Implemented responsibility"><span className="block h-1 w-12 rounded" style={{ background: current[4] }} /><p className="mt-5 text-sm leading-6 text-text-secondary">{current[5]}</p></Panel>
     </div>
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[["Frontend", "React 18 · Vite · Tailwind"], ["Backend", "FastAPI · Python 3.11"], ["Orchestration", "LangGraph · specialist workflows"], ["Evidence", "ChromaDB · BM25 · NetworkX"]].map(([label, value]) => <div className="border-t-2 border-primary bg-surface p-4 shadow-panel" key={label}><p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p><p className="mt-2 font-mono text-xs text-text-primary">{value}</p></div>)}</div>
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[["Frontend", "React 18 Â· Vite Â· Tailwind"], ["Backend", "FastAPI Â· Python 3.11"], ["Orchestration", "LangGraph Â· specialist workflows"], ["Evidence", "ChromaDB Â· BM25 Â· NetworkX"]].map(([label, value]) => <div className="border-t-2 border-primary bg-surface p-4 shadow-panel" key={label}><p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p><p className="mt-2 font-mono text-xs text-text-primary">{value}</p></div>)}</div>
   </div>;
 }

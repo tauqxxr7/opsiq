@@ -1,47 +1,46 @@
 # OPSIQ enterprise UI review
 
-QA completed locally at 1440 x 900 and 390 x 844 against the running FastAPI service. Screenshots are stored in `docs/screenshots/enterprise-redesign/`.
+QA was completed locally at 1440 x 900 and 390 x 844 against FastAPI. Screenshots are stored in `docs/screenshots/enterprise-redesign/`.
 
 | Workspace | Route | Desktop | Mobile | API | Issues fixed / notes |
 |---|---|---|---|---|---|
-| Operations overview | `/` | Pass | Pass | Live | Populated fleet, risk, reliability, compliance and document metrics; synthetic label visible. |
-| Expert Copilot | `/copilot` | Pass | Pass | Ready | Evidence-only empty state is intentional; no unsupported answer generated. |
-| Asset monitor | `/assets` | Pass | Pass | Live | Five simulated assets rendered without chart or page overflow. |
-| Maintenance intelligence | `/maintenance` | Pass | Pass | Live | P-201 deterministic risk, evidence and chart rendered cleanly. |
-| Incident intelligence | `/incidents` | Pass | Pass | Live | Eight API-returned similarity records verified; corrupted separator removed. |
-| Reliability analytics | `/reliability` | Pass | Pass | Live | Derived metrics and responsive charts rendered without label collisions. |
-| Compliance audit | `/compliance` | Pass | Pass | Live | OISD-118 evidence matrix rendered; prototype disclaimer remains visible. |
-| Work orders | `/work-orders` | Pass | Pass | Live | Generated draft, evidence controls and approval warning verified; corrupted separators and bullets removed. |
-| Failure patterns | `/patterns` | Pass | Pass | Live | Ranked correlations and evidence table remain horizontally contained. |
-| Document library | `/documents` | Pass | Pass | Live | Backend inventory empty state and upload limits are explicit. |
-| Benchmark laboratory | `/benchmarks` | Pass | Pass | Ready | No values shown until a measured benchmark is run; history is not persisted. |
-| Audit trail | `/audit` | Pass | Pass | Live | Process-local events rendered; corrupted separator removed. |
-| Settings | `/settings` | Pass | Pass | Read-only | Corrupted limitation bullets removed; runtime boundaries remain explicit. |
+| Operations overview | `/dashboard` | Pass | Pass | Local pass; preview blocked | Fleet, risk, reliability, compliance and document metrics are explicitly synthetic. |
+| Asset monitor | `/assets` | Pass | Pass | Local pass; preview blocked | Five simulated assets render without chart or page overflow. |
+| Expert Copilot | `/copilot` | Pass | Pass | Local ready; preview blocked | Evidence-only empty state is intentional; no unsupported answer is generated. |
+| Maintenance intelligence | `/maintenance` | Pass | Pass | Local pass; preview blocked | P-201 deterministic risk, evidence and chart render cleanly. |
+| Incident operations | `/incidents` | Pass | Pass | Local pass; preview blocked | Persistent incident register, filters and creation form are responsive. |
+| Reliability analytics | `/reliability` | Pass | Pass | Local pass; preview blocked | Derived metrics and responsive charts render without label collisions. |
+| Compliance audit | `/compliance` | Pass | Pass | Local pass; preview blocked | OISD-118 matrix and prototype disclaimer remain visible. |
+| Work orders | `/work-orders` | Pass | Pass | Local pass; preview blocked | Persistent linked workflow and approval controls are role-aware. |
+| Failure patterns | `/patterns` | Pass | Pass | Local pass; preview blocked | Ranked correlations and evidence table remain horizontally contained. |
+| Knowledge base | `/documents` | Pass | Pass | Local pass; preview blocked | Empty inventory and upload limits are explicit. |
+| Benchmarks | `/benchmarks` | Pass | Pass | Local ready; preview blocked | Values appear only after a measured run; history is not persisted. |
+| Audit trail | `/audit` | Pass | Pass | Local pass; preview blocked | Process-local audit events render without overflow. |
+| Settings | `/settings` | Pass | Pass | Local admin pass; preview blocked | User administration is available only to Administrators when auth is enabled. |
+| Architecture | `/architecture` | Pass | Pass | Static | Direct route renders without page-level horizontal overflow. |
 
-The architecture explainer at `/architecture` was also checked for routing and overflow and remains available through the command palette.
+## Final release-candidate preview
+
+- Preview: `https://opsiq-2qgoihc9a-tauqeers-projects-b2ec7057.vercel.app`
+- Commit: `cb32508907b99e221b2a67943827a791707a9888`
+- Vercel deployment: Ready and all 14 direct SPA routes render.
+- Route overflow: none observed during the final route sweep.
+- Console: no OPSIQ warnings or errors were captured.
+- API/CORS: blocked. Every API-backed route reports `Offline` or `The backend is unavailable` from the immutable preview origin.
+- Authentication: blocked. The preview displays `Local development / Administrator`; login and frontend route guards are not production-enabled.
+- Final preview status: **not ready for merge**.
 
 ## Interaction and accessibility checks
 
 - Mobile drawer opens and closes without viewport overflow.
-- `Ctrl+K` / `Cmd+K`, skip navigation, focus styles and semantic landmarks remain available.
+- Command palette, skip navigation, visible focus styles and semantic landmarks remain available.
 - Loading, empty, degraded and disconnected states preserve page context.
 - Reduced-motion CSS disables non-essential movement and smooth scrolling.
-- Browser console: zero warnings and zero errors during the final route sweep.
-
-## Fixed during final visual QA
-
-- Replaced invalid encoded separators in the persistent demo notice, incident results, work-order draft, audit description and settings limitations.
-- Replaced decorative safety bullets with screen-reader-safe text markers.
-- Regenerated all affected screenshots using populated API responses.
 
 ## Remaining limitations
 
 - Operational records and telemetry are synthetic demonstrations, not SCADA or DCS data.
-- Incident and work-order workflow state is not persisted.
 - Compliance output is evidence-gap decision support, not certification.
-- Benchmark results appear only after an explicit measured run and have no history backend.
-- Copilot requires indexed evidence and configured model credentials for synthesized answers.
-
-## Local review
-
-Start the backend on port 8000 and run `npm run dev -- --host 127.0.0.1` from `frontend`. Review each route above at 1440 x 900 and 390 x 844, then run `npm run lint`, `npm run check:deployment` and `npm run build` before release.
+- Benchmark history is not persisted.
+- Copilot requires indexed evidence and configured model credentials.
+- Preview authentication, Railway connectivity and Railway volume persistence still require deployment-level verification.

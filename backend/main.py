@@ -7,7 +7,7 @@ from fastapi import Depends, FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import analytics, audit, auth, benchmark, compliance, documents, incidents, maintenance, patterns, query, sensors, work_orders
-from core.config import CORS_ORIGINS
+from core.config import CORS_ORIGINS, CORS_ORIGIN_REGEX
 from core.database import OperationalStore
 from core.security import current_user
 from core.orchestrator import build_graph
@@ -51,6 +51,11 @@ async def load_models_background(retrieval):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info(
+        "CORS configured: %d exact origin(s); regex configured: %s",
+        len(CORS_ORIGINS),
+        bool(CORS_ORIGIN_REGEX),
+    )
     app_state.update(models_ready=False, startup_error=None)
     retrieval = RetrievalService()
     app.state.retrieval_service = retrieval
@@ -75,9 +80,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Accept", "Authorization", "Content-Type"],
 )
 protected = [Depends(current_user)]
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])

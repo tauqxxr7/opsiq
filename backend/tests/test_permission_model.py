@@ -23,9 +23,18 @@ def permission_of(route):
 
 
 def protected_routes():
-    for route in app.routes:
-        if getattr(route, "path", "").startswith("/api/"):
-            yield route.path, route
+    seen = set()
+    for included in app.routes:
+        if hasattr(included, "original_router"):
+            prefix = included.include_context.prefix
+            candidates = ((prefix + route.path, route) for route in included.original_router.routes)
+        else:
+            candidates = ((getattr(included, "path", ""), included),)
+        for path, route in candidates:
+            key = (path, tuple(sorted(route.methods)))
+            if path.startswith("/api/") and key not in seen:
+                seen.add(key)
+                yield path, route
 
 
 def test_every_protected_api_route_declares_a_canonical_permission():

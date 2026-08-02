@@ -3,11 +3,13 @@ from contextlib import asynccontextmanager
 import logging
 from pathlib import Path
 
-from fastapi import FastAPI, Response
+from fastapi import Depends, FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import analytics, audit, benchmark, compliance, documents, maintenance, patterns, query, sensors
+from api import analytics, audit, auth, benchmark, compliance, documents, incidents, maintenance, patterns, query, sensors, work_orders
 from core.config import CORS_ORIGINS
+from core.database import OperationalStore
+from core.security import current_user
 from core.orchestrator import build_graph
 from keepalive import ping_self
 from services.document_processor import DocumentProcessor
@@ -52,6 +54,7 @@ async def lifespan(app: FastAPI):
     app_state.update(models_ready=False, startup_error=None)
     retrieval = RetrievalService()
     app.state.retrieval_service = retrieval
+    app.state.store = OperationalStore()
     app.state.graph = build_graph(retrieval)
     model_task = asyncio.create_task(load_models_background(retrieval))
     keepalive_task = asyncio.create_task(ping_self())
@@ -76,15 +79,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
-app.include_router(query.router, prefix="/api/query", tags=["Query"])
-app.include_router(maintenance.router, prefix="/api/maintenance", tags=["Maintenance"])
-app.include_router(compliance.router, prefix="/api/compliance", tags=["Compliance"])
-app.include_router(patterns.router, prefix="/api/patterns", tags=["Patterns"])
-app.include_router(benchmark.router, prefix="/api/benchmark", tags=["Benchmark"])
-app.include_router(audit.router, prefix="/api/audit", tags=["Audit"])
-app.include_router(sensors.router, prefix="/api/sensors", tags=["Sensors"])
-app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+protected = [Depends(current_user)]
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(incidents.router, prefix="/api/incidents", tags=["Incidents"])
+app.include_router(work_orders.router, prefix="/api/work-orders", tags=["Work Orders"])
+app.include_router(documents.router, prefix="/api/documents", tags=["Documents"], dependencies=protected)
+app.include_router(query.router, prefix="/api/query", tags=["Query"], dependencies=protected)
+app.include_router(maintenance.router, prefix="/api/maintenance", tags=["Maintenance"], dependencies=protected)
+app.include_router(compliance.router, prefix="/api/compliance", tags=["Compliance"], dependencies=protected)
+app.include_router(patterns.router, prefix="/api/patterns", tags=["Patterns"], dependencies=protected)
+app.include_router(benchmark.router, prefix="/api/benchmark", tags=["Benchmark"], dependencies=protected)
+app.include_router(audit.router, prefix="/api/audit", tags=["Audit"], dependencies=protected)
+app.include_router(sensors.router, prefix="/api/sensors", tags=["Sensors"], dependencies=protected)
+app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"], dependencies=protected)
 
 
 @app.get("/health")

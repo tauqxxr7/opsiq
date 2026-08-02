@@ -7,3 +7,4 @@ frontend/node_modules/
 frontend/dist/
 frontend/.npm-cache/
 backend/.venv/
+backend/data/*.db

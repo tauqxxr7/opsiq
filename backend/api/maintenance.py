@@ -1,20 +1,21 @@
 import time
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
 from agents.maintenance_agent import MaintenanceAgent
 from core.audit import log_query
+from core.permissions import Permission, authorize
 
 router = APIRouter()
 
 
 @router.get("")
-async def catalog():
+async def catalog(_: dict = Depends(authorize(Permission.GENERAL_READ))):
     return MaintenanceAgent().catalog()
 
 
 @router.get("/{equipment_id}")
-async def equipment(equipment_id: str, request: Request):
+async def equipment(equipment_id: str, request: Request, _: dict = Depends(authorize(Permission.GENERAL_READ))):
     started = time.perf_counter()
     query = f"maintenance history {equipment_id}"
     result = await request.app.state.graph.ainvoke(
@@ -31,14 +32,14 @@ async def equipment(equipment_id: str, request: Request):
     return response
 
 @router.post("/incidents/similar")
-async def find_similar_incidents(payload: dict):
+async def find_similar_incidents(payload: dict, _: dict = Depends(authorize(Permission.GENERAL_READ))):
     from services.incident_similarity import IncidentSimilarityEngine
     results = IncidentSimilarityEngine().find_similar(payload.get("description", ""), payload.get("equipment_id"), payload.get("top_k", 3))
     return {"query": payload.get("description", ""), "equipment_id": payload.get("equipment_id"), "similar_incidents": results, "count": len(results)}
 
 
 @router.post("/workorder/generate/{equipment_id}")
-async def generate_work_order(equipment_id: str):
+async def generate_work_order(equipment_id: str, _: dict = Depends(authorize(Permission.WORK_ORDER_CREATE))):
     from agents.workorder_agent import WorkOrderAgent
     from services.incident_similarity import IncidentSimilarityEngine
     analysis = MaintenanceAgent().analyze(equipment_id)

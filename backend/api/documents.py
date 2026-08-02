@@ -2,9 +2,10 @@ import hashlib
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
 from core.config import MAX_UPLOAD_SIZE_MB
+from core.permissions import Permission, authorize
 from services.document_processor import DocumentProcessor
 from services.ingestion_registry import IngestionRegistry
 
@@ -14,7 +15,7 @@ SUPPORTED = {".pdf": b"%PDF", ".docx": b"PK"}
 
 
 @router.post("/upload")
-async def upload(request: Request, file: UploadFile = File(...)):
+async def upload(request: Request, file: UploadFile = File(...), _: dict = Depends(authorize(Permission.DOCUMENT_UPLOAD))):
     filename = Path((file.filename or "").replace("\\", "/")).name
     suffix = Path(filename).suffix.lower()
     if suffix not in SUPPORTED:
@@ -48,12 +49,12 @@ async def upload(request: Request, file: UploadFile = File(...)):
 
 
 @router.get("")
-async def inventory():
+async def inventory(_: dict = Depends(authorize(Permission.GENERAL_READ))):
     documents = IngestionRegistry().list()
     return {"status": "ok", "documents": documents, "document_count": len(documents), "chunks": sum(item.get("chunks",0) for item in documents)}
 
 
 @router.get("/stats")
-async def stats(request: Request):
+async def stats(request: Request, _: dict = Depends(authorize(Permission.GENERAL_READ))):
     documents = IngestionRegistry().list()
     return {"chunks": request.app.state.retrieval_service.count(), "documents": len(documents), "status": "operational"}

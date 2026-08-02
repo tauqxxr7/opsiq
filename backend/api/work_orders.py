@@ -4,7 +4,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
-from core.security import Role, current_user, require_roles
+from core.permissions import Permission, authorize
 
 router = APIRouter()
 Priority = Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
@@ -39,12 +39,12 @@ class WorkOrderUpdate(BaseModel):
 
 
 @router.get("")
-async def list_work_orders(request: Request, incident_id: str | None = None, asset_id: str | None = None, priority: Priority | None = None, status: WorkStatus | None = None, limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0), _: dict = Depends(current_user)):
+async def list_work_orders(request: Request, incident_id: str | None = None, asset_id: str | None = None, priority: Priority | None = None, status: WorkStatus | None = None, limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0), _: dict = Depends(authorize(Permission.GENERAL_READ))):
     return request.app.state.store.list_records("work_orders", {"incident_id": incident_id, "asset_id": asset_id, "priority": priority, "status": status}, limit, offset)
 
 
 @router.post("", status_code=201)
-async def create_work_order(payload: WorkOrderCreate, request: Request, user: dict = Depends(require_roles(Role.MAINTENANCE_ENGINEER, Role.RELIABILITY_ENGINEER, Role.SUPERVISOR, Role.PLANT_MANAGER, Role.ADMINISTRATOR))):
+async def create_work_order(payload: WorkOrderCreate, request: Request, user: dict = Depends(authorize(Permission.WORK_ORDER_CREATE))):
     if payload.incident_id and not request.app.state.store.get_record("incidents", payload.incident_id):
         raise HTTPException(status_code=422, detail="Linked incident does not exist")
     if payload.work_order_id and request.app.state.store.get_record("work_orders", payload.work_order_id):
@@ -53,21 +53,21 @@ async def create_work_order(payload: WorkOrderCreate, request: Request, user: di
 
 
 @router.get("/{work_order_id}")
-async def get_work_order(work_order_id: str, request: Request, _: dict = Depends(current_user)):
+async def get_work_order(work_order_id: str, request: Request, _: dict = Depends(authorize(Permission.GENERAL_READ))):
     record=request.app.state.store.get_record("work_orders", work_order_id)
     if not record: raise HTTPException(status_code=404, detail="Work order not found")
     return record
 
 
 @router.patch("/{work_order_id}")
-async def update_work_order(work_order_id: str, payload: WorkOrderUpdate, request: Request, _: dict = Depends(require_roles(Role.MAINTENANCE_ENGINEER, Role.SUPERVISOR, Role.PLANT_MANAGER, Role.ADMINISTRATOR))):
+async def update_work_order(work_order_id: str, payload: WorkOrderUpdate, request: Request, _: dict = Depends(authorize(Permission.WORK_ORDER_UPDATE))):
     record=request.app.state.store.update_record("work_orders", work_order_id, payload.model_dump(exclude_unset=True))
     if not record: raise HTTPException(status_code=404, detail="Work order not found")
     return record
 
 
 @router.post("/{work_order_id}/approve")
-async def approve_work_order(work_order_id: str, request: Request, user: dict = Depends(require_roles(Role.SUPERVISOR, Role.PLANT_MANAGER, Role.ADMINISTRATOR))):
+async def approve_work_order(work_order_id: str, request: Request, user: dict = Depends(authorize(Permission.WORK_ORDER_APPROVE))):
     record=request.app.state.store.get_record("work_orders", work_order_id)
     if not record: raise HTTPException(status_code=404, detail="Work order not found")
     history=[*record["approval_history"], {"actor": user["username"], "action": "APPROVED", "at": datetime.now(timezone.utc).isoformat()}]
@@ -79,7 +79,7 @@ class CompletionRequest(BaseModel):
 
 
 @router.post("/{work_order_id}/complete")
-async def complete_work_order(work_order_id: str, payload: CompletionRequest, request: Request, _: dict = Depends(require_roles(Role.MAINTENANCE_ENGINEER, Role.SUPERVISOR, Role.PLANT_MANAGER, Role.ADMINISTRATOR))):
+async def complete_work_order(work_order_id: str, payload: CompletionRequest, request: Request, _: dict = Depends(authorize(Permission.WORK_ORDER_COMPLETE))):
     record=request.app.state.store.get_record("work_orders", work_order_id)
     if not record: raise HTTPException(status_code=404, detail="Work order not found")
     return request.app.state.store.update_record("work_orders", work_order_id, {"status":"COMPLETED", "completed_at":datetime.now(timezone.utc).isoformat(), "completion_notes":payload.completion_notes})

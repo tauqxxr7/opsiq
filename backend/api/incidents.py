@@ -4,7 +4,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
-from core.security import Role, current_user, require_roles
+from core.permissions import Permission, authorize
 
 router = APIRouter()
 IncidentSeverity = Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
@@ -45,12 +45,12 @@ class IncidentUpdate(BaseModel):
 
 
 @router.get("")
-async def list_incidents(request: Request, asset_id: str | None = None, plant: str | None = None, unit: str | None = None, severity: IncidentSeverity | None = None, status: IncidentStatus | None = None, limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0), _: dict = Depends(current_user)):
+async def list_incidents(request: Request, asset_id: str | None = None, plant: str | None = None, unit: str | None = None, severity: IncidentSeverity | None = None, status: IncidentStatus | None = None, limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0), _: dict = Depends(authorize(Permission.GENERAL_READ))):
     return request.app.state.store.list_records("incidents", {"asset_id": asset_id, "plant": plant, "unit": unit, "severity": severity, "status": status}, limit, offset)
 
 
 @router.post("", status_code=201)
-async def create_incident(payload: IncidentCreate, request: Request, user: dict = Depends(require_roles(Role.OPERATOR, Role.SAFETY_ENGINEER, Role.SUPERVISOR, Role.PLANT_MANAGER, Role.ADMINISTRATOR))):
+async def create_incident(payload: IncidentCreate, request: Request, user: dict = Depends(authorize(Permission.INCIDENT_CREATE))):
     data = payload.model_dump(mode="json")
     if data["incident_id"] and request.app.state.store.get_record("incidents", data["incident_id"]):
         raise HTTPException(status_code=409, detail="Incident ID already exists")
@@ -58,14 +58,14 @@ async def create_incident(payload: IncidentCreate, request: Request, user: dict 
 
 
 @router.get("/{incident_id}")
-async def get_incident(incident_id: str, request: Request, _: dict = Depends(current_user)):
+async def get_incident(incident_id: str, request: Request, _: dict = Depends(authorize(Permission.GENERAL_READ))):
     record = request.app.state.store.get_record("incidents", incident_id)
     if not record: raise HTTPException(status_code=404, detail="Incident not found")
     return record
 
 
 @router.patch("/{incident_id}")
-async def update_incident(incident_id: str, payload: IncidentUpdate, request: Request, _: dict = Depends(require_roles(Role.MAINTENANCE_ENGINEER, Role.RELIABILITY_ENGINEER, Role.SAFETY_ENGINEER, Role.SUPERVISOR, Role.PLANT_MANAGER, Role.ADMINISTRATOR))):
+async def update_incident(incident_id: str, payload: IncidentUpdate, request: Request, _: dict = Depends(authorize(Permission.INCIDENT_UPDATE))):
     record = request.app.state.store.update_record("incidents", incident_id, payload.model_dump(exclude_unset=True, mode="json"))
     if not record: raise HTTPException(status_code=404, detail="Incident not found")
     return record

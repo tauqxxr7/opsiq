@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from core.security import ALL_ROLES, Role, current_user, decode_token, issue_tokens, require_roles, verify_password
+from core.permissions import Permission, authorize
+from core.security import ALL_ROLES, decode_token, issue_tokens, verify_password
 
 router = APIRouter()
 
@@ -40,22 +41,22 @@ async def refresh(payload: RefreshRequest, request: Request):
 
 
 @router.get("/me")
-async def me(user: dict = Depends(current_user)):
+async def me(user: dict = Depends(authorize(Permission.GENERAL_READ))):
     return {key: user[key] for key in ("username", "display_name", "role")}
 
 
 @router.get("/roles")
-async def roles(user: dict = Depends(current_user)):
+async def roles(user: dict = Depends(authorize(Permission.GENERAL_READ))):
     return {"roles": sorted(ALL_ROLES), "current_role": user["role"]}
 
 
 @router.get("/users")
-async def users(request: Request, _: dict = Depends(require_roles(Role.ADMINISTRATOR))):
+async def users(request: Request, _: dict = Depends(authorize(Permission.USER_ADMIN))):
     return {"users": request.app.state.store.list_users()}
 
 
 @router.post("/users", status_code=201)
-async def create_user(payload: UserCreate, request: Request, _: dict = Depends(require_roles(Role.ADMINISTRATOR))):
+async def create_user(payload: UserCreate, request: Request, _: dict = Depends(authorize(Permission.USER_ADMIN))):
     if payload.role not in ALL_ROLES:
         raise HTTPException(status_code=422, detail="Unsupported role")
     if request.app.state.store.get_user(payload.username):

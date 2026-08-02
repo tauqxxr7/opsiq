@@ -3,13 +3,12 @@ from contextlib import asynccontextmanager
 import logging
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, Response
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import analytics, audit, auth, benchmark, compliance, documents, incidents, maintenance, patterns, query, sensors, work_orders
 from core.config import CORS_ORIGINS, CORS_ORIGIN_REGEX
 from core.database import OperationalStore
-from core.security import current_user
 from core.orchestrator import build_graph
 from keepalive import ping_self
 from services.document_processor import DocumentProcessor
@@ -85,19 +84,18 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Accept", "Authorization", "Content-Type"],
 )
-protected = [Depends(current_user)]
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(incidents.router, prefix="/api/incidents", tags=["Incidents"])
 app.include_router(work_orders.router, prefix="/api/work-orders", tags=["Work Orders"])
-app.include_router(documents.router, prefix="/api/documents", tags=["Documents"], dependencies=protected)
-app.include_router(query.router, prefix="/api/query", tags=["Query"], dependencies=protected)
-app.include_router(maintenance.router, prefix="/api/maintenance", tags=["Maintenance"], dependencies=protected)
-app.include_router(compliance.router, prefix="/api/compliance", tags=["Compliance"], dependencies=protected)
-app.include_router(patterns.router, prefix="/api/patterns", tags=["Patterns"], dependencies=protected)
-app.include_router(benchmark.router, prefix="/api/benchmark", tags=["Benchmark"], dependencies=protected)
-app.include_router(audit.router, prefix="/api/audit", tags=["Audit"], dependencies=protected)
-app.include_router(sensors.router, prefix="/api/sensors", tags=["Sensors"], dependencies=protected)
-app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"], dependencies=protected)
+app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
+app.include_router(query.router, prefix="/api/query", tags=["Query"])
+app.include_router(maintenance.router, prefix="/api/maintenance", tags=["Maintenance"])
+app.include_router(compliance.router, prefix="/api/compliance", tags=["Compliance"])
+app.include_router(patterns.router, prefix="/api/patterns", tags=["Patterns"])
+app.include_router(benchmark.router, prefix="/api/benchmark", tags=["Benchmark"])
+app.include_router(audit.router, prefix="/api/audit", tags=["Audit"])
+app.include_router(sensors.router, prefix="/api/sensors", tags=["Sensors"])
+app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 
 
 @app.get("/health")

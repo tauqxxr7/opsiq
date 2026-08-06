@@ -8,7 +8,7 @@ export default function TopBar({ setOpen }) {
       </button>
       <div className="ml-3 lg:ml-0">
         <p className="text-sm font-semibold text-text-primary">Operations intelligence workspace</p>
-        <p className="hidden text-xs text-muted sm:block">Evidence-derived analytics · synthetic demonstration data</p>
+        <p className="hidden text-xs text-muted sm:block">Evidence-derived analytics - synthetic demonstration data</p>
       </div>
       <span className="ml-auto rounded-md bg-card px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-text-secondary">Demo environment</span>
     </header>

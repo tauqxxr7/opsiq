@@ -28,7 +28,7 @@ class RetrievalService:
                 return
             self.collection = None
             self.encoder = None
-            self.reranker = None
+            self._reranker = None
             self.bm25 = None
             self.ids = []
             self.documents = []
@@ -40,6 +40,14 @@ class RetrievalService:
     @property
     def initialized(self):
         return self.collection is not None
+
+    @property
+    def reranker(self):
+        if self._reranker is None:
+            from sentence_transformers import CrossEncoder
+
+            self._reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        return self._reranker
 
     def initialize(self):
         """Load the vector store and ML models exactly once for this persistence path."""
@@ -55,18 +63,16 @@ class RetrievalService:
             import chromadb
             import numpy as np
             from rank_bm25 import BM25Okapi
-            from sentence_transformers import CrossEncoder, SentenceTransformer
+            from sentence_transformers import SentenceTransformer
 
             self._np = np
             self._bm25_class = BM25Okapi
             collection = chromadb.PersistentClient(path=CHROMA_DB_PATH).get_or_create_collection(
                 "opsiq_documents", metadata={"hnsw:space": "cosine"}
             )
-            encoder = SentenceTransformer("all-MiniLM-L6-v2")
-            reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+            encoder = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
             self.collection = collection
             self.encoder = encoder
-            self.reranker = reranker
             self._refresh()
 
     def _tokens(self, text):

@@ -1,26 +1,2 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
-  theme: {
-    extend: {
-      colors: {
-        base: "#0A0F1E",
-        surface: "#111827",
-        card: "#1F2937",
-        border: "#374151",
-        primary: "#3B82F6",
-        secondary: "#34D399",
-        warning: "#F59E0B",
-        critical: "#EF4444",
-        muted: "#9CA3AF",
-        sidebar: "#0B1120",
-        "sidebar-muted": "#9CA3AF",
-        "text-primary": "#F9FAFB",
-        "text-secondary": "#9CA3AF",
-      },
-      fontFamily: { sans: ["Inter", "sans-serif"], mono: ["JetBrains Mono", "monospace"] },
-      boxShadow: { panel: "0 12px 32px rgba(0, 0, 0, 0.18)" },
-    },
-  },
-  plugins: [],
-};
+export default { content:["./index.html","./src/**/*.{js,jsx}"], theme:{ extend:{ colors:{ base:"#070b12",surface:"#0d131e",card:"#121b29",border:"#223044",primary:"#20b8e6",secondary:"#34d399",warning:"#f2ad3b",critical:"#f05a67",muted:"#718096",sidebar:"#090e17","sidebar-muted":"#718096","text-primary":"#edf4ff","text-secondary":"#a5b4c7" }, fontFamily:{ sans:["Inter","sans-serif"],mono:["JetBrains Mono","monospace"] }, boxShadow:{ panel:"0 16px 44px rgba(0,0,0,.28)" } } }, plugins:[] };

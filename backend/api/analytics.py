@@ -3,7 +3,8 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from core.permissions import Permission, authorize
 from core.evidence import WorkOrderRecord, load_records
 
 router = APIRouter()
@@ -15,7 +16,7 @@ def _orders():
 
 
 @router.get("/reliability")
-async def reliability():
+async def reliability(_: dict = Depends(authorize(Permission.GENERAL_READ))):
     grouped = defaultdict(list)
     for order in _orders(): grouped[order["equipment_id"]].append(order)
     metrics = []
@@ -33,7 +34,7 @@ async def reliability():
 
 
 @router.get("/downtime/trends")
-async def downtime_trends():
+async def downtime_trends(_: dict = Depends(authorize(Permission.GENERAL_READ))):
     monthly = defaultdict(float)
     for order in _orders(): monthly[order["date"][:7]] += float(order["downtime_hours"])
     return {"monthly_downtime": [{"month": month, "downtime_hours": round(value, 1)} for month, value in sorted(monthly.items())][-12:]}

@@ -13,3 +13,4 @@ tmp
 tests
 model_cache
 .cache
+data/*.db

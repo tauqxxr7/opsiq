@@ -8,13 +8,9 @@ import {
 } from "../src/services/apiConfig.js";
 
 const appRoutes = [
-  "/",
-  "/copilot",
-  "/maintenance",
-  "/compliance",
-  "/patterns",
-  "/documents",
-  "/architecture",
+  "/", "/login", "/dashboard", "/copilot", "/assets", "/maintenance", "/incidents",
+  "/reliability", "/compliance", "/work-orders", "/patterns", "/documents",
+  "/benchmarks", "/audit", "/settings", "/architecture",
 ];
 
 const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url)));
@@ -27,7 +23,7 @@ for (const route of appRoutes) {
   assert.equal(routeDestinations.get(route), "/index.html", `Missing SPA rewrite for ${route}`);
 }
 assert.equal(
-  rewrites.some(({ source }) => source.includes("assets") || source.includes(":path")),
+  rewrites.some(({ source }) => source.startsWith("/assets/") || source.includes(":path")),
   false,
   "Static assets must not be captured by the SPA rewrite",
 );

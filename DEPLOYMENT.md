@@ -2,39 +2,48 @@
 
 ## Backend — Railway
 
-1. Go to railway.app and create a New Project
-2. Select Deploy from GitHub repo → tauqxxr7/opsiq
-3. Set Root Directory to: backend
-4. Add environment variables:
-   - GEMINI_API_KEY = your_key_here
-   - CHROMA_DB_PATH = /data/chroma_db
-   - CORS_ORIGINS = https://your-vercel-url.vercel.app
-5. Add a volume mount at /data
-6. Deploy. Health check: /health
+1. Create a Railway project from `tauqxxr7/opsiq`.
+2. Set the service root directory to `backend`.
+3. Mount a persistent volume at `/data`.
+4. Configure:
+   - `GEMINI_API_KEY` — optional synthesis key
+   - `CHROMA_DB_PATH=/data/chroma_db`
+   - `OPSIQ_DB_PATH=/data/opsiq.db`
+   - `CORS_ORIGINS=https://opsiq-one.vercel.app`
+   - `CORS_ORIGIN_REGEX=^https://(?:opsiq-one\.vercel\.app|opsiq-(?:[a-z0-9]+|git-[a-z0-9-]+)-tauqeers-projects-b2ec7057\.vercel\.app)$`
+   - `OPSIQ_AUTH_REQUIRED=true`
+   - `OPSIQ_JWT_SECRET` — a random secret of at least 32 characters
+   - `OPSIQ_ADMIN_USERNAME` — bootstrap administrator username
+   - `OPSIQ_ADMIN_PASSWORD` — unique bootstrap password of at least 12 characters
+   - `OPSIQ_ADMIN_DISPLAY_NAME` — administrator display name
+5. Deploy and use `/health` as the health check.
+
+`CORS_ORIGINS` remains the exact comma-separated allowlist. `CORS_ORIGIN_REGEX` is optional and is matched against the complete origin. The OPSIQ expression above permits only the production domain and deployment or Git-branch aliases generated for the `opsiq` project in Tauqeer's Vercel team. It does not permit unrelated `vercel.app` projects, arbitrary Vercel subdomains or wildcard origins. For local development, leave the `.env.example` localhost origins in `CORS_ORIGINS`; production must replace them rather than append them.
+The bootstrap administrator is created only if the configured username does not exist. Remove the bootstrap password from the Railway environment after the first successful initialization. SQLite, including the refresh-session ledger, is suitable for the single-instance demonstration. PostgreSQL is required before multi-instance enterprise use.
 
 ## Frontend — Vercel
 
-1. Go to vercel.com → New Project
-2. Import tauqxxr7/opsiq from GitHub
-3. Set Root Directory to: frontend
-4. Add environment variable:
-   - VITE_API_URL = https://your-railway-url.railway.app/api
-5. Deploy.
+1. Import `tauqxxr7/opsiq` into Vercel.
+2. Set the root directory to `frontend`.
+3. Configure:
+   - `VITE_API_URL=https://your-railway-url.railway.app/api`
+   - `VITE_AUTH_REQUIRED=true`
+4. Deploy. The checked-in rewrites support direct access to application and login routes.
 
-## Local Development
+## Local development
 
 ```powershell
 cd backend
 python -m venv .venv
-.venv\Scripts\activate  # Windows
+.venv\Scripts\activate
 pip install -r requirements.txt
-cp ../.env.example .env
-# Add GEMINI_API_KEY to .env
-uvicorn main:app --reload --port 8000
+Copy-Item ../.env.example .env
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
 
 # New terminal
 cd frontend
-npm install
-npm run dev
-# Open http://localhost:5173
+npm ci
+npm run dev -- --host 127.0.0.1
 ```
+
+Authentication defaults to disabled for backward-compatible local demonstration. To test it locally, enable both `OPSIQ_AUTH_REQUIRED=true` and `VITE_AUTH_REQUIRED=true`, provide the JWT secret and bootstrap administrator variables, then restart both services.

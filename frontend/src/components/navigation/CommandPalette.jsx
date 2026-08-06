@@ -1,0 +1,14 @@
+import { Search, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext";
+import { canAccessRoute } from "../../auth/permissions";
+import { navigation } from "../../constants/navigation";
+
+export default function CommandPalette({ open, onClose }) {
+  const [query, setQuery] = useState(""); const navigate = useNavigate(); const { user } = useAuth();
+  useEffect(() => { if (!open) setQuery(""); }, [open]);
+  const matches = useMemo(() => navigation.flatMap((group) => group.items.map((item) => ({ ...item, group: group.label }))).filter((item) => canAccessRoute(user?.role, item.to) && item.label.toLowerCase().includes(query.toLowerCase())), [query, user?.role]);
+  if (!open) return null; const choose = (path) => { navigate(path); onClose(); };
+  return <div className="fixed inset-0 z-[80] flex items-start justify-center bg-black/70 p-4 pt-[12vh] backdrop-blur-sm" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><section className="motion-dialog w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl" role="dialog" aria-modal="true" aria-label="Command palette"><div className="flex items-center gap-3 border-b border-border px-4"><Search className="text-muted" size={18} /><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") onClose(); if (event.key === "Enter" && matches[0]) choose(matches[0].to); }} className="h-14 flex-1 bg-transparent text-sm outline-none" placeholder="Navigate to assets, incidents, work orders..." /><button onClick={onClose} aria-label="Close command palette"><X size={18} /></button></div><div className="max-h-80 overflow-y-auto p-2">{matches.map((item) => <button key={item.to} onClick={() => choose(item.to)} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-text-secondary hover:bg-card hover:text-text-primary"><item.icon size={16} /><span>{item.label}</span><span className="ml-auto text-[10px] uppercase text-muted">{item.group}</span></button>)}</div></section></div>;
+}

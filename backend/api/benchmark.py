@@ -2,14 +2,16 @@ import json
 import time
 from pathlib import Path
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
+
+from core.permissions import Permission, authorize
 
 router = APIRouter()
 BENCHMARK_PATH = Path(__file__).parents[1] / "data" / "evaluation" / "benchmark.json"
 
 
 @router.get("/run")
-async def run_benchmark(request: Request):
+async def run_benchmark(request: Request, _: dict = Depends(authorize(Permission.BENCHMARK_EXECUTE))):
     """Run the predefined retrieval-quality benchmark against the active index."""
     if not BENCHMARK_PATH.exists():
         return {"error": "Benchmark file not found"}

@@ -93,7 +93,7 @@ export default function ExpertCopilot() {
             <input id="copilot-input" className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-4 py-3 text-sm text-text-primary outline-none transition-colors placeholder:text-muted focus:border-primary focus:ring-1 focus:ring-primary" value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => event.key === "Enter" && send()} placeholder="Ask an evidence-grounded operational question..." />
             <button onClick={() => send()} disabled={loading || !input.trim()} className="flex min-w-12 items-center justify-center rounded-lg bg-primary px-4 text-white transition-colors hover:bg-primary/90 disabled:opacity-40" aria-label="Send question">{loading ? <span className="skeleton h-4 w-4 rounded-full" /> : <Send size={18} />}</button>
           </div>
-          <p className="mt-2 font-mono text-xs text-muted">Retrieves from indexed documents only. All answers include source citations.{noDocuments && <span className="ml-2 text-warning">No documents indexed - upload files in Document Library</span>}</p>
+          <p className="mt-2 font-mono text-xs text-muted">Retrieves from indexed documents only. All answers include source citations.{noDocuments && <span className="ml-2 text-warning">No documents indexed - upload files in Knowledge Base</span>}</p>
         </div>
       </section>
       <aside className="card-hover rounded-xl border border-border bg-surface p-5 shadow-panel">

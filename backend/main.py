@@ -6,8 +6,9 @@ from pathlib import Path
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import analytics, audit, benchmark, compliance, documents, maintenance, patterns, query, sensors
-from core.config import CORS_ORIGINS
+from api import analytics, audit, auth, benchmark, compliance, documents, incidents, maintenance, patterns, query, sensors, work_orders
+from core.config import CORS_ORIGINS, CORS_ORIGIN_REGEX
+from core.database import OperationalStore
 from core.orchestrator import build_graph
 from keepalive import ping_self
 from services.document_processor import DocumentProcessor
@@ -49,9 +50,15 @@ async def load_models_background(retrieval):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info(
+        "CORS configured: %d exact origin(s); regex configured: %s",
+        len(CORS_ORIGINS),
+        bool(CORS_ORIGIN_REGEX),
+    )
     app_state.update(models_ready=False, startup_error=None)
     retrieval = RetrievalService()
     app.state.retrieval_service = retrieval
+    app.state.store = OperationalStore()
     app.state.graph = build_graph(retrieval)
     model_task = asyncio.create_task(load_models_background(retrieval))
     keepalive_task = asyncio.create_task(ping_self())
@@ -72,10 +79,14 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Accept", "Authorization", "Content-Type"],
 )
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(incidents.router, prefix="/api/incidents", tags=["Incidents"])
+app.include_router(work_orders.router, prefix="/api/work-orders", tags=["Work Orders"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 app.include_router(query.router, prefix="/api/query", tags=["Query"])
 app.include_router(maintenance.router, prefix="/api/maintenance", tags=["Maintenance"])

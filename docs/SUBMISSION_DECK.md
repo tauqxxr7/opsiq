@@ -57,7 +57,7 @@ Verified public routes display live backend data for dashboard metrics, P-201 ma
 
 ## Page 7 — Limitations and roadmap
 
-**Current:** synthetic evidence, narrow OISD-118 scope, no authentication or tenancy, small regression evaluation, and no live telemetry.
+**Current:** synthetic evidence, narrow OISD-118 scope, environment-gated single-tenant authentication, SQLite operational persistence, small regression evaluation, and no live telemetry.
 
 **Next:** controlled plant-data validation, access control, tenant isolation, retrieval evaluation, asynchronous ingestion, human approval workflows, security hardening, and enterprise connectors.
 

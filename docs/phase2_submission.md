@@ -76,7 +76,7 @@ Vercel hosts the React frontend. Railway builds the Python 3.11 FastAPI containe
 
 ## 16. Current limitations
 
-Synthetic evidence only; narrow OISD-118 scope; no authentication or tenancy; no plant-system connectors; small evaluation corpus; retrieval quality depends on document coverage; and safety decisions require human review.
+Synthetic evidence only; narrow OISD-118 scope; environment-gated single-tenant authentication; SQLite operational persistence; no plant-system connectors; small evaluation corpus; retrieval quality depends on document coverage; and safety decisions require human review.
 
 ## 17. Future roadmap
 

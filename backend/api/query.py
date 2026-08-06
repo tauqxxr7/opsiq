@@ -1,9 +1,10 @@
 import time
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
 
 from core.audit import log_query
+from core.permissions import Permission, authorize
 
 router = APIRouter()
 
@@ -16,7 +17,7 @@ class QueryRequest(BaseModel):
 
 
 @router.post("")
-async def query(payload: QueryRequest, request: Request):
+async def query(payload: QueryRequest, request: Request, _: dict = Depends(authorize(Permission.GENERAL_READ))):
     started = time.perf_counter()
     state = {
         "query": payload.query,

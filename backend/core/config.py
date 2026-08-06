@@ -21,5 +21,6 @@ CHROMA_DB_PATH = os.getenv(
 CORS_ORIGINS = _csv_env(
     "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
 )
+CORS_ORIGIN_REGEX = os.getenv("CORS_ORIGIN_REGEX", "").strip() or None
 
 MAX_UPLOAD_SIZE_MB = int(os.getenv('MAX_UPLOAD_SIZE_MB', '20'))

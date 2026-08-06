@@ -1,6 +1,7 @@
 import { Activity, AlertTriangle, CheckCircle2, Siren } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
+import { tokens } from "../design/tokens";
 import { Link } from "react-router-dom";
 import LoadingState from "../components/ui/LoadingState";
 import MetricCard from "../components/ui/MetricCard";
@@ -23,10 +24,10 @@ export default function SensorDashboard() {
   }, []);
   useEffect(() => { load(); const timer = setInterval(load, 10000); return () => clearInterval(timer); }, [load]);
 
-  if (loading) return <Panel><LoadingState message="Reading simulated fleet telemetry..." /></Panel>;
-  if (error && !fleet) return <ErrorState message={error} onRetry={load} />;
+  if (loading) return <div className="space-y-6"><PageHeader eyebrow="Operations telemetry" title="Asset monitor" description="Loading simulated fleet telemetry..." /><Panel><LoadingState message="Reading simulated fleet telemetry..." /></Panel></div>;
+  if (error && !fleet) return <div className="space-y-6"><PageHeader eyebrow="Operations telemetry" title="Asset monitor" description="Simulated telemetry; not connected to SCADA or DCS." /><ErrorState message={error} onRetry={load} /></div>;
   return <div className="page-enter page-enter-active space-y-6">
-    <PageHeader eyebrow="Operations telemetry" title="Sensor monitor" description="Simulated telemetry refreshed every 10 seconds for demonstration; not connected to live SCADA." />
+    <PageHeader eyebrow="Operations telemetry" title="Asset monitor" description="Simulated telemetry refreshed every 10 seconds for demonstration; not connected to live SCADA." />
     {error && <ErrorState message={error} onRetry={load} />}
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <MetricCard label="Fleet size" value={fleet.fleet_size} detail="Simulated assets" icon={Activity} />
@@ -36,8 +37,8 @@ export default function SensorDashboard() {
     </div>
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{fleet.equipment.map((item) => <article key={item.equipment_id} className={`rounded-xl border bg-surface p-5 shadow-panel ${item.health_signal === "CRITICAL" ? "border-critical/50 shadow-[0_0_24px_rgba(239,68,68,.12)]" : item.health_signal === "WARNING" ? "border-warning/40" : "border-border"}`}>
       <div className="flex items-center justify-between"><h2 className="font-mono text-xl font-bold">{item.equipment_id}</h2><StatusBadge tone={tone[item.health_signal]}>{item.health_signal}</StatusBadge></div>
-      <div className="my-4 h-12"><ResponsiveContainer width="100%" height="100%"><LineChart data={trends[item.equipment_id] || []}><Line type="monotone" dataKey="vibration_mm_s" stroke="#3B82F6" dot={false} strokeWidth={2} /></LineChart></ResponsiveContainer></div>
-      <dl className="grid grid-cols-2 gap-3 text-xs"><div><dt className="text-muted">Temperature</dt><dd className="mt-1 font-mono">{item.temperature_c} C</dd></div><div><dt className="text-muted">Vibration</dt><dd className="mt-1 font-mono">{item.vibration_mm_s} mm/s</dd></div><div><dt className="text-muted">Bearing temp</dt><dd className="mt-1 font-mono">{item.bearing_temp_c} C</dd></div><div><dt className="text-muted">Speed</dt><dd className="mt-1 font-mono">{item.rpm} rpm</dd></div></dl>
+      <div className="my-4 h-12"><ResponsiveContainer width="100%" height="100%"><LineChart data={trends[item.equipment_id] || []}><Line type="monotone" dataKey="vibration_mm_s" stroke={tokens.color.accent} dot={false} strokeWidth={2} /></LineChart></ResponsiveContainer></div>
+      <dl className="grid grid-cols-2 gap-3 text-xs"><div><dt className="text-muted">Temperature</dt><dd className="mt-1 font-mono">{item.temperature_c} deg C</dd></div><div><dt className="text-muted">Vibration</dt><dd className="mt-1 font-mono">{item.vibration_mm_s} mm/s</dd></div><div><dt className="text-muted">Bearing temp</dt><dd className="mt-1 font-mono">{item.bearing_temp_c} deg C</dd></div><div><dt className="text-muted">Speed</dt><dd className="mt-1 font-mono">{item.rpm} rpm</dd></div></dl>
       <div className="mt-4 min-h-8 text-xs text-text-secondary">{item.alarms.length ? item.alarms.map((alarm) => <p key={alarm.parameter} className="text-warning">{alarm.level}: {alarm.parameter.replaceAll("_", " ")}</p>) : "No active alarms"}</div>
       <Link to={`/maintenance?equipment=${item.equipment_id}`} className="mt-4 inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary">View full analysis</Link>
     </article>)}</div>
